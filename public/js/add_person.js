@@ -89,6 +89,8 @@ addRowToTable = (data) => {
     let activeCell = document.createElement("TD");
     let emailCell = document.createElement("TD")
 
+    let deleteCell = document.createElement("TD");
+
     
 
     // Fill the cells with correct data
@@ -100,6 +102,12 @@ addRowToTable = (data) => {
     activeCell.innerText = newRow.active;
     emailCell.innerText = newRow.email;
 
+    deleteCell = document.createElement("button");
+    deleteCell.innerHTML = "Delete";
+    deleteCell.onclick = function(){
+        deletePerson(newRow.customer_id);
+    };
+
     // Add the cells to the row 
     row.appendChild(idCell);
     row.appendChild(firstNameCell);
@@ -108,6 +116,10 @@ addRowToTable = (data) => {
     row.appendChild(notesCell);
     row.appendChild(activeCell);
     row.appendChild(emailCell);
+    row.appendChild(deleteCell);
+
+    // Add a row attribute so the deleteRow function can find a newly added row
+    row.setAttribute('data-value', newRow.customer_id);
     
     // Add the row to the table
     currentTable.appendChild(row);
