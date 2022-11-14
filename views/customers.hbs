@@ -1,7 +1,13 @@
-{{!-- Just some plain text --}}
+{{! Code Cited }}
+{{!starter code from osu-cs340 nodejs dev guide; modified to fit Customer entity }}
+{{!Source URL: https://github.com/osu-cs340-ecampus/nodejs-starter-app }}
+{{! Authors: George Kochera et al. }}
+{{! Date accessed: 11/8/22 }}
 
-<h1>The server is running!</h1>
-<p>If you see this text, the server is <strong>definitely</strong> working!</p>
+
+
+<h1>Customers</h1>
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
 {{!-- The Data from our Database --}}
@@ -26,7 +32,7 @@
     {{!-- Body section --}}
     <tbody>
 
-        {{!-- For each row, print the id, fname, lname, homeworld and age, in order --}}
+        {{!-- For each row, display the customer's attributes, and a delete button --}}
         {{#each data}}
         <tr data-value={{this.customer_id}}>
             <td>{{this.customer_id}}</td>
@@ -44,8 +50,8 @@
 <script src="./js/delete_person.js"></script>
 
 {{!-- Form to add a record to the table using AJAX --}}
-<h2>Adding Data with AJAX</h2>
-<p>To add a new person, please enter their information below and click 'Submit'!</p>
+<h2>Adding a Customer Record</h2>
+<p>To add a new Customer to the database, please enter their information below and click 'Submit'!</p>
 <form id="add-person-form-ajax">
     <label for="input-fname">First Name: </label>
     <input type="text" name="input-fname" id="input-fname">
@@ -70,3 +76,43 @@
 
 {{!-- Embed our javascript to handle the DOM manipulation and AJAX request --}}
 <script src="./js/add_person.js"></script>
+
+
+
+
+<h2>Updating A Customer's Information</h2>
+<p>To update a specific Customer information select their name from the drop-down menu on the left and input the required values</p>
+<form id="update-person-form-ajax">
+
+    <label for="input-fullname">Full name: </label>
+    <select name="input-fullname" id="mySelect">
+        <option value="test">Select a Person</option>
+        {{#each data}}
+        <option value="{{this.customer_id}}">{{this.first_name}} {{this.last_name}}</option>
+        {{/each}}
+    </select>
+
+    <label for="update-phone">Phone: </label>
+    <input type="text" name="update-phone" id="update-phone">
+
+    <label for="update-notes">Notes: </label>
+    <input type="text" name="update-notes" id="update-notes">
+
+
+    <label for="update-active">Active: </label>
+    <select name="update-active" id="update-active">
+        <option>1</option>
+        <option>0</option>
+    </select>
+    
+
+    <label for="update-email">Email: </label>
+    <input type="text" name="update-email" id="update-email">
+
+    <input type="submit">
+
+
+
+</form>
+
+<script src="./js/update_person.js"></script>

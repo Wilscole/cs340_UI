@@ -1,3 +1,9 @@
+//Code Cited 
+//starter code from osu-cs340 nodejs dev guide; modified to fit Customer entity
+//Source URL: https://github.com/osu-cs340-ecampus/nodejs-starter-app
+// Authors: George Kochera et al. 
+// Date accessed: 11/8/22
+
 // Get the objects we need to modify
 let addPersonForm = document.getElementById('add-person-form-ajax');
 
@@ -66,7 +72,7 @@ addPersonForm.addEventListener("submit", function (e) {
 
 
 // Creates a single row from an Object representing a single record from 
-// bsg_people
+// Customers
 addRowToTable = (data) => {
 
     // Get a reference to the current table on the page and clear it out.
@@ -123,4 +129,10 @@ addRowToTable = (data) => {
     
     // Add the row to the table
     currentTable.appendChild(row);
+
+    let selectMenu = document.getElementById("mySelect");
+    let option = document.createElement("option");
+    option.text = newRow.first_name + ' ' +  newRow.last_name;
+    option.value = newRow.customer_id;
+    selectMenu.add(option);
 }

@@ -1,3 +1,7 @@
+//Code Cited (starter code from osu-cs340 nodejs dev guide)
+//Source URL: https://github.com/osu-cs340-ecampus/nodejs-starter-app
+// Authors: George Kochera et al. 
+
 // Get an instance of mysql we can use in the app
 var mysql = require('mysql')
 
