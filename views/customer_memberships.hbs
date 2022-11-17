@@ -1,0 +1,101 @@
+{{! Code Cited }}
+{{!starter code from osu-cs340 nodejs dev guide; modified to fit Customer entity }}
+{{!Source URL: https://github.com/osu-cs340-ecampus/nodejs-starter-app }}
+{{! Authors: George Kochera et al. }}
+{{! Date accessed: 11/8/22 }}
+
+
+
+<h1>Customer Memberships</h1>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+{{!-- The Data from our Database --}}
+
+{{!-- Create a table --}}
+<table id="customer-membership-table">
+
+    {{!-- Header section --}}
+    <thead>
+
+        {{!-- For just the first row, we print each key of the row object as a header cell so we
+        know what each column means when the page renders --}}
+        <tr>
+            {{#each data.[0]}}
+            <th>
+                {{@key}}
+            </th>
+            {{/each}}
+        </tr>
+    </thead>
+
+    {{!-- Body section --}}
+    <tbody>
+
+        {{!-- For each row, display the customer-membership's attributes, and a delete button --}}
+        {{#each data}}
+        <tr data-value={{this.customer_membership_id}}>
+            <td>{{this.customer_membership_id}}</td>
+            <td>{{this.Customers_customer_id}}</td>
+            <td>{{this.Locations_location_id}}</td>
+            <td>{{this.membership_fee}}</td>
+            <td><button onclick="deleteCustomerMembership({{this.customer_membership_id}})">Delete</button></td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+<script src="./js/delete_customer_membership.js"></script>
+
+{{!-- Form to add a record to the table using AJAX --}}
+<h2>Adding a Customer Membership Record</h2>
+<p>To add a new Customer Membership to the database, please enter their information below and click 'Submit'!</p>
+<form id="add-cust-mem-form-ajax">
+    <label for="input-cust-id">Customer Id: </label>
+    <input type="text" name="input-cust-id" id="input-cust-id">
+    
+    <label for="input-loc-id">Location Id: </label>
+    <input type="text" name="input-loc-id" id="input-loc-id">
+
+    <label for="input-memb-fee">Monthly Membership Fee: </label>
+    <input type="text" name="input-memb-fee" id="input-memb-fee">
+
+    <input type="submit">
+</form>
+
+{{!-- Embed our javascript to handle the DOM manipulation and AJAX request --}}
+<script src="./js/add_customer_membership.js"></script>
+
+
+
+
+<h2>Updating A Customer Membership Information</h2>
+<p>To update a specific Customer Membership select their name from the drop-down menu on the left and input the required values</p>
+<form id="update-cust-mem-form-ajax">
+
+    <label for="update-cust-mem-id">Select a Customer Membership: </label>
+    <select name="update-cust-mem-id" id="mySelectCustMem">
+        <option value="test">Select a Customer Membership</option>
+        {{#each data}}
+        <option value="{{this.customer_membership_id}}">{{this.customer_membership_id}}</option>
+        {{/each}}
+    </select>
+
+    <label for="update-cust-id">Customer Id:: </label>
+    <input type="text" name="update-location" id="update-cust-id">
+
+    <label for="update-location">Location: </label>
+    <input type="text" name="update-location" id="update-location">
+
+    <label for="update-membership-fee">Membership Fee: </label>
+    <input type="text" name="update-membership-fee" id="update-membership-fee">
+
+
+    
+
+    <input type="submit">
+
+
+
+</form>
+
+<script src="./js/update_customer_membership.js"></script>

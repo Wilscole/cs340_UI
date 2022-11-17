@@ -19,7 +19,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 //app.use(express.static(__dirname + '/views'));
 
-PORT = 52068;
+PORT = 52069;
 
 // Database
 var db = require('./database/db-connector');
@@ -51,13 +51,20 @@ app.get('/customers', function(req, res)
     })
 });
 
+app.get('/customer-memberships', function(req, res) 
+{
+    let query1 = "SELECT * FROM Customer_Memberships;";
+    db.pool.query(query1, function(error, rows, fields){
+        res.render('customer_memberships', {data: rows});
+  })
+
+});
+
 app.get('/locations', function(req, res) {
   res.sendFile(path.join(__dirname, '/views/locations.html'));
 });
 
-app.get('/customer-memberships', function(req, res) {
-  res.sendFile(path.join(__dirname, '/views/Customer_Memberships.html'));
-});
+
 
 app.get('/events', function(req, res) {
   res.sendFile(path.join(__dirname, '/views/events.html'));
@@ -121,6 +128,58 @@ app.post('/add-person-ajax', function(req, res)
 });
 
 
+// POST ROUTE FOR CUSTOMER MEMBERSHIPS
+app.post('/add-customer-membership-ajax', function(req, res) 
+{
+    // Capture the incoming data and parse it back to a JS object
+    let data = req.body;
+
+    // Capture NULL values
+
+
+    let membershipFee = parseInt(data.membership_fee);
+    if (isNaN(membershipFee))
+    {
+        membershipFee = 0
+    }
+
+    // Create the query and run it on the database
+    query1 = `INSERT INTO Customer_Memberships (Customers_customer_id, Locations_location_id, membership_fee) VALUES (${data.Customers_customer_id}, ${data.Locations_location_id}, ${data.membership_fee})`;
+    db.pool.query(query1, function(error, rows, fields){
+
+        // Check to see if there was an error
+        if (error) {
+
+            // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+            console.log(error)
+            res.sendStatus(400);
+        }
+        else
+        {
+            // If there was no error, perform a SELECT * on bsg_people
+            query2 = `SELECT * FROM Customer_Memberships;`;
+            db.pool.query(query2, function(error, rows, fields){
+
+                // If there was an error on the second query, send a 400
+                if (error) {
+                    
+                    // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+                    console.log(error);
+                    res.sendStatus(400);
+                }
+                // If all went well, send the results of the query back.
+                else
+                {
+                    res.send(rows);
+                }
+            })
+        }
+    })
+});
+
+
+
+
 
 app.delete('/delete-person-ajax/', function(req,res,next){                                                                
   let data = req.body;
@@ -151,6 +210,28 @@ app.delete('/delete-person-ajax/', function(req,res,next){
                     }
                 })
             }
+})});
+
+//DELETE routing for Customer Memberships
+
+app.delete('/delete-customer-membership-ajax/', function(req,res,next){                                                                
+  let data = req.body;
+  console.log(data)
+  let custMemId = parseInt(data.id);
+  let deleteCust_Memb = `DELETE FROM Customer_Memberships WHERE customer_membership_id = ?`;
+
+
+        // Run the 1st query
+        db.pool.query(deleteCust_Memb, [custMemId], function(error, rows, fields){
+            if (error) {
+
+            // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+            console.log(error);
+            res.sendStatus(400);
+            } else {
+              res.sendStatus(204);
+          }
+
 })});
 
 app.put('/put-person-ajax', function(req,res,next){   
@@ -189,6 +270,49 @@ app.put('/put-person-ajax', function(req,res,next){
                 })
             }
 })});
+
+// UPDATE handler for Customer Memberships
+
+app.put('/put-customer-membership-ajax', function(req,res,next){   
+  console.log(req.body);                                
+  let data = req.body;
+  console.log("made it")
+
+  let custMemId = parseInt(data.customer_membership_id);
+  let custId = parseInt(data.Customers_customer_id);
+  let locId = parseInt(data.Locations_location_id);
+  let membFee = parseInt(data.membership_fee);
+
+
+  queryUpdateCustMem = `UPDATE Customer_Memberships SET Customers_customer_id = ?, Locations_location_id = ?, membership_fee = ? WHERE customer_membership_id = ?;`;
+  selectCustMems = `SELECT * FROM Customer_Memberships WHERE customer_membership_id = ?;`
+
+        // Run the 1st query
+        db.pool.query(queryUpdateCustMem, [custId, locId, membFee, custMemId], function(error, rows, fields){
+            if (error) {
+
+            // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+            console.log(error);
+            res.sendStatus(400);
+            }
+
+            // If there was no error, we run our second query and return the customer data to populate the table
+            else
+            {
+                // Run the second query
+                db.pool.query(selectCustMems, [custMemId], function(error, rows, fields) {
+        
+                    if (error) {
+                        console.log(error);
+                        res.sendStatus(400);
+                    } else {
+                        res.send(rows);
+                    }
+                })
+            }
+})});
+
+
 /*
     LISTENER
 */
