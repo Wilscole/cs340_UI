@@ -54,8 +54,24 @@ app.get('/customers', function(req, res)
 app.get('/customer-memberships', function(req, res) 
 {
     let query1 = "SELECT * FROM Customer_Memberships;";
+    let query2 = "SELECT * FROM Customers;";
+    let query3 = "SELECT * FROM Locations";
+
     db.pool.query(query1, function(error, rows, fields){
-        res.render('customer_memberships', {data: rows});
+
+        let custMems = rows;
+
+        db.pool.query(query2, (error, rows, fields) => {
+          let customers = rows;
+
+          db.pool.query(query3, (error, rows, fields) => {
+
+            let locations = rows;
+            res.render('customer_memberships', {data: custMems, customers: customers, locations: locations});
+          })
+
+        })
+        
   })
 
 });
@@ -63,8 +79,21 @@ app.get('/customer-memberships', function(req, res)
 app.get('/vendor-locations', function(req, res) 
 {
     let query1 = "SELECT * FROM Vendor_Locations;";
+    let query2 = "SELECT * FROM Vendors;";
+    let query3 = "SELECT * FROM Locations;";
+
     db.pool.query(query1, function(error, rows, fields){
-        res.render('vendor_locations', {data: rows});
+        let vendorLocs = rows;
+
+        db.pool.query(query2, function(error, rows, fields){
+          let vendors = rows;
+
+          db.pool.query(query3, function(error, rows, fields){
+            let locations = rows;
+            res.render('vendor_locations', {data: vendorLocs, vendors: vendors, locations: locations});
+          })
+        })
+        
   })
 
 });
@@ -92,6 +121,7 @@ app.get('/vendors', function (req, res) {
 app.get('/events', function (req, res) {
   let query1 = "SELECT * FROM Events;";               // Define our query
   let query2 = "SELECT vendor_loc_id FROM Vendor_Locations"
+
 
   db.pool.query(query1, function (error, rows, fields) {    // Execute the query
       let events = rows
@@ -765,11 +795,11 @@ app.put('/put-event-ajax', function (req, res, next) {
   let event = parseInt(data.name);
 
 
-  queryUpdateEvent = `UPDATE Events SET name = ?, date = ?, Vendor_Locations_vendor_loc_id = ?  WHERE Events.event_id = ?;`;
+  queryUpdateEvent = `UPDATE Events SET date = ? WHERE Events.event_id = ?;`;
   selectEvent = `SELECT * FROM Events WHERE Events.event_id = ?;`
 
   // Run the 1st query
-  db.pool.query(queryUpdateEvent, [data.name, data.date, data.location, event], function (error, rows, fields) {
+  db.pool.query(queryUpdateEvent, [data.name, data.date, event], function (error, rows, fields) {
       if (error) {
 
           // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.

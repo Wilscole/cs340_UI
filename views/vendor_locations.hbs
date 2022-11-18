@@ -50,11 +50,28 @@
 <h2>Adding a Vendor Location Record</h2>
 <p>To add a new Vendor Location to the database, please enter its information below and click 'Submit'!</p>
 <form id="add-vendor-location-form-ajax">
+
     <label for="input-vendor-id">Vendor: </label>
-    <input type="text" name="input-vendor-id" id="input-vendor-id">
-    
+    <select name="input-vendor-id" id="input-vendor-id">
+        <option value="">Select a Vendor</option>
+        {{#each vendors}}
+        <option value="{{this.vendor_id}}">{{this.name}}</option>
+        {{/each}}
+    </select>
+
     <label for="input-location-id">Location: </label>
-    <input type="text" name="input-location-id" id="input-location-id">
+    <select name="input-location-id" id="input-location-id">
+        <option value="">Select a Location</option>
+        {{#each locations}}
+        <option value="{{this.location_id}}">{{this.name}}</option>
+        {{/each}}
+    </select>
+
+    {{!--<label for="input-vendor-id">Vendor: </label>--}}
+    {{!--<input type="text" name="input-vendor-id" id="input-vendor-id">--}}
+    
+    {{!--<label for="input-location-id">Location: </label>--}}
+    {{!--<input type="text" name="input-location-id" id="input-location-id">--}}
 
     <label for="input-rent">Monthly Rent: </label>
     <input type="text" name="input-rent" id="input-rent">
@@ -72,7 +89,7 @@
 <p>To update a specific Vendor-Location information select their name from the drop-down menu on the left and input the required values</p>
 <form id="update-vendor-location-form-ajax">
 
-    <label for="input-vendor-loc">Full name: </label>
+    <label for="input-vendor-loc">Vendor-Location: </label>
     <select name="input-vendor-loc" id="mySelectVendorLoc">
         <option value="test">Select a Vendor Location</option>
         {{#each data}}
@@ -81,10 +98,26 @@
     </select>
 
     <label for="update-vendor-id">Vendor: </label>
-    <input type="text" name="update-vendor-id" id="update-vendor-id">
+    <select name="update-vendor-id" id="update-vendor-id">
+        <option value="">Select a Vendor</option>
+        {{#each vendors}}
+        <option value="{{this.vendor_id}}">{{this.name}}</option>
+        {{/each}}
+    </select>
 
     <label for="update-location-id">Location: </label>
-    <input type="text" name="update-location-id" id="update-location-id">
+    <select name="update-location-id" id="update-location-id">
+        <option value="">Select a Location</option>
+        {{#each locations}}
+        <option value="{{this.location_id}}">{{this.name}}</option>
+        {{/each}}
+    </select>
+
+    {{!--<label for="update-vendor-id">Vendor: </label>--}}
+    {{!--<input type="text" name="update-vendor-id" id="update-vendor-id">--}}
+
+    {{!--<label for="update-location-id">Location: </label>--}}
+    {{!--<input type="text" name="update-location-id" id="update-location-id">--}}
 
     <label for="update-rent">Rent: </label>
     <input type="text" name="update-rent" id="update-rent">

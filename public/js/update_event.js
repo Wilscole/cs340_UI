@@ -16,13 +16,13 @@ updateEventForm.addEventListener("submit", function (e) {
     // Get form fields we need to get data from
     let inputName = document.getElementById("mySelect");
     let inputDate = document.getElementById("update-date");
-    let inputLocation = document.getElementById("update-location");
+    //let inputLocation = document.getElementById("update-location");
 
     // Get the values from the form fields
 
     let nameValue = inputName.value;
     let dateValue = inputDate.value;
-    let locationValue = inputLocation.value;
+    //let locationValue = inputLocation.value;
 
 
 
@@ -34,9 +34,9 @@ updateEventForm.addEventListener("submit", function (e) {
     if (!dateValue) {
         return;
     }
-    if (!locationValue) {
-        return;
-    }
+    //if (!locationValue) {
+    //    return;
+    //}
 
 
 
@@ -44,7 +44,7 @@ updateEventForm.addEventListener("submit", function (e) {
     let data = {
         name: nameValue,
         date: dateValue,
-        location: locationValue,
+        //location: locationValue,
 
     };
 
@@ -91,9 +91,12 @@ function updateRow(data, eventID) {
 
             // Get td of homeworld value
             let dateTD = updateRowIndex.getElementsByTagName("td")[2];
-            let locationTD = updateRowIndex.getElementsByTagName("td")[3];
+            //let locationTD = updateRowIndex.getElementsByTagName("td")[3];
 
-
+            dateTD.innerHTML = parsedData[0].date; 
+            //notesTD.innerHTML = parsedData[0].notes; 
+            //activeTD.innerHTML = parsedData[0].active; 
+            //emailTD.innerHTML = parsedData[0].email; 
         }
     }
 }
