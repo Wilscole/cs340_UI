@@ -1,0 +1,87 @@
+{{!-- Create a table --}}
+<h1>Events</h1>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<table id="event-table">
+
+    {{!-- Header section --}}
+    <thead>
+
+        {{!-- For just the first row, we print each key of the row object as a header cell so we
+        know what each column means when the page renders --}}
+        <tr>
+            {{#each events.[0]}}
+            <th>
+                {{@key}}
+            </th>
+            {{/each}}
+        </tr>
+    </thead>
+
+    {{!-- Body section --}}
+    <tbody>
+
+        {{!-- For each row, print the id, fname, lname, homeworld and age, in order --}}
+        {{#each events}}
+        <tr data-value={{this.event_id}}>
+            <td>{{this.event_id}}</td>
+            <td>{{this.name}}</td>
+            <td>{{this.date}}</td>
+            <td>{{this.Vendor_Locations_vendor_loc_id}}</td>
+
+            <td><button onclick="deleteEvent({{this.event_id}})">Delete</button></td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+<script src="./js/delete_events.js"></script>
+
+
+<h2>Adding a Event Record</h2>
+<p>To add a new Event to the database, please enter their information below and click 'Submit'!</p>
+<form id="add-event-form-ajax">
+    <label for="input-name">Name: </label>
+    <input type="text" name="input-name" id="input-name">
+    
+        <label for="input-date">Date: </label>
+    <input type="date" name="input-date" id="input-date">
+
+        <label for="input-location">Location: </label>
+    <select name="input-location" id="input-location">
+        {{#each locations}}
+        <option value="{{this.vendor_loc_id}}">{{this.vendor_loc_id}} </option>
+        {{/each}}
+    </select>
+
+    <input type="submit">
+</form>
+
+{{!-- Embed our javascript to handle the DOM manipulation and AJAX request --}}
+<script src="./js/add_event.js"></script>
+
+
+<h2>Updating an Event's Information</h2>
+<p>To update a specific Events's information select their name from the drop-down menu on the left and input the required values</p>
+<form id="update-event-form-ajax">
+
+    <label for="input-name">Name: </label>
+    <select name="input-name" id="mySelect">
+        <option value="test">Select an Event</option>
+        {{#each events}}
+        <option value="{{this.event_id}}">{{this.name}} </option>
+        {{/each}}
+    </select>
+
+
+        <label for="update-date">Date: </label>
+    <input type="date" name="update-date" id="update-date">
+
+
+    <input type="submit">
+
+
+
+</form>
+
+<script src="./js/update_event.js"></script>

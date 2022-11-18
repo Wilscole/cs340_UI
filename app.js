@@ -70,24 +70,42 @@ app.get('/vendor-locations', function(req, res)
 });
 
 
-app.get('/locations', function(req, res) {
-  res.sendFile(path.join(__dirname, '/views/locations.html'));
+app.get('/locations', function (req, res) {
+  let query1 = "SELECT * FROM Locations;";               // Define our query
+
+
+  db.pool.query(query1, function (error, rows, fields) {    // Execute the query
+
+      res.render('locations', { data: rows });                  // Render the index.hbs file, and also send the renderer
+  })                                                      // an object where 'data' is equal to the 'rows' we
+});
+
+app.get('/vendors', function (req, res) {
+  let query1 = "SELECT * FROM Vendors;";               // Define our query
+
+  db.pool.query(query1, function (error, rows, fields) {    // Execute the query
+
+      res.render('vendors', { data: rows });                  // Render the index.hbs file, and also send the renderer
+  })                                                      // an object where 'data' is equal to the 'rows' we
+});
+
+app.get('/events', function (req, res) {
+  let query1 = "SELECT * FROM Events;";               // Define our query
+  let query2 = "SELECT vendor_loc_id FROM Vendor_Locations"
+
+  db.pool.query(query1, function (error, rows, fields) {    // Execute the query
+      let events = rows
+      db.pool.query(query2, function (error, rows, fields) {    // Execute the query
+          let locations = rows
+          res.render('events', { events: events, locations: locations });                  // Render the index.hbs file, and also send the renderer
+      })
+  })                                                 // an object where 'data' is equal to the 'rows' we
 });
 
 
 
-app.get('/events', function(req, res) {
-  res.sendFile(path.join(__dirname, '/views/events.html'));
-});
 
-app.get('/vendor-locations', function(req, res) {
-  res.sendFile(path.join(__dirname, '/views/vendor_locations.html'));
-});
-
-app.get('/vendors', function(req, res) {
-  res.sendFile(path.join(__dirname, '/views/vendors.html'));
-});
-
+// ------------ADD ROUTES----------------
 // POST ROUTES FOR CUSTOMERS
 app.post('/add-person-ajax', function(req, res) 
 {
@@ -231,9 +249,134 @@ app.post('/add-vendor-location-ajax', function(req, res)
     })
 });
 
+//CREATES
+app.post('/add-location-ajax', function (req, res) {
+  // Capture the incoming data and parse it back to a JS object
+  let data = req.body;
+
+  // Capture NULL values
 
 
-//DELETE ROUTES
+  // let age = parseInt(data.age);
+  // if (isNaN(age))
+  // {
+  //     age = 'NULL'
+  // }
+
+  // Create the query and run it on the database
+  query1 = `INSERT INTO Locations (name, address, phone, active) VALUES ('${data.name}', '${data.address}', ${data.phone}, ${data.active})`;
+  db.pool.query(query1, function (error, rows, fields) {
+
+      // Check to see if there was an error
+      if (error) {
+
+          // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+          console.log(error)
+          res.sendStatus(400);
+      }
+      else {
+          // If there was no error, perform a SELECT * on bsg_people
+          query2 = `SELECT * FROM Locations;`;
+          db.pool.query(query2, function (error, rows, fields) {
+
+              // If there was an error on the second query, send a 400
+              if (error) {
+
+                  // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+                  console.log(error);
+                  res.sendStatus(400);
+              }
+              // If all went well, send the results of the query back.
+              else {
+                  res.send(rows);
+              }
+          })
+      }
+  })
+});
+
+app.post('/add-vendor-ajax', function (req, res) {
+  // Capture the incoming data and parse it back to a JS object
+  let data = req.body;
+
+  // Capture NULL values
+
+
+
+  // Create the query and run it on the database
+  query1 = `INSERT INTO Vendors (name, events, phone, email, billing_address) VALUES ('${data.name}', '${data.events}', '${data.phone}', '${data.email}', '${data.address}')`;
+  db.pool.query(query1, function (error, rows, fields) {
+
+      // Check to see if there was an error
+      if (error) {
+
+          // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+          console.log(error)
+          res.sendStatus(400);
+      }
+      else {
+          // If there was no error, perform a SELECT * on bsg_people
+          query2 = `SELECT * FROM Vendors;`;
+          db.pool.query(query2, function (error, rows, fields) {
+
+              // If there was an error on the second query, send a 400
+              if (error) {
+
+                  // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+                  console.log(error);
+                  res.sendStatus(400);
+              }
+              // If all went well, send the results of the query back.
+              else {
+                  res.send(rows);
+              }
+          })
+      }
+  })
+});
+
+app.post('/add-event-ajax', function (req, res) {
+  // Capture the incoming data and parse it back to a JS object
+  let data = req.body;
+
+  // Capture NULL values
+  console.log('locationsss', data.location)
+
+
+  // Create the query and run it on the database
+  query1 = `INSERT INTO Events (name, date, Vendor_Locations_vendor_loc_id) VALUES ('${data.name}', '${data.date}', '${data.location}')`;
+  db.pool.query(query1, function (error, rows, fields) {
+
+      // Check to see if there was an error
+      if (error) {
+
+          // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+          console.log(error)
+          res.sendStatus(400);
+      }
+      else {
+          // If there was no error, perform a SELECT * on bsg_people
+          query2 = `SELECT * FROM Events;`;
+          db.pool.query(query2, function (error, rows, fields) {
+
+              // If there was an error on the second query, send a 400
+              if (error) {
+
+                  // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+                  console.log(error);
+                  res.sendStatus(400);
+              }
+              // If all went well, send the results of the query back.
+              else {
+                  res.send(rows);
+              }
+          })
+      }
+  })
+});
+
+
+//----------------------DELETE ROUTES--------------------
 
 app.delete('/delete-person-ajax/', function(req,res,next){                                                                
   let data = req.body;
@@ -311,6 +454,113 @@ app.delete('/delete-vendor-location-ajax/', function(req,res,next){
 })});
 
 
+//DELETES
+app.delete('/delete-location-ajax/', function (req, res, next) {
+  let data = req.body;
+  let locationID = parseInt(data.id);
+  let deleteCust_Memb = `DELETE FROM Customer_Memberships WHERE Locations_location_id = ?`;
+  let deleteCustomer = `DELETE FROM Locations WHERE location_id = ?`;
+  let deleteVendor_Loc = `DELETE FROM Vendor_Locations WHERE Locations_location_id = ?`;
+
+
+
+
+  // Run the 1st query
+  db.pool.query(deleteCust_Memb, [locationID], function (error, rows, fields) {
+      if (error) {
+
+          // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+          console.log(error);
+          res.sendStatus(400);
+      }
+
+      else {
+          // Run the second query
+          db.pool.query(deleteCustomer, [locationID], function (error, rows, fields) {
+
+              if (error) {
+                  console.log(error);
+                  res.sendStatus(400);
+              } else {
+                  db.pool.query(deleteVendor_Loc, [locationID], function (error, rows, fields) {
+                      if (error) {
+                          console.log(error);
+                          res.sendStatus(400);
+                      } else {
+                          res.sendStatus(204);
+                      }
+                  })
+              }
+          })
+      }
+  });
+});
+
+app.delete('/delete-vendor-ajax/', function (req, res, next) {
+  let data = req.body;
+  let vendorID = parseInt(data.id);
+  let deleteVend_Loc = `DELETE FROM Vendor_Locations WHERE Vendors_vendor_id = ?`;
+  let deleteVendor = `DELETE FROM Vendors WHERE vendor_id = ?`;
+
+
+  // Run the 1st query
+  db.pool.query(deleteVend_Loc, [vendorID], function (error, rows, fields) {
+      if (error) {
+
+          // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+          console.log(error);
+          res.sendStatus(400);
+      }
+
+      else {
+          // Run the second query
+          db.pool.query(deleteVendor, [vendorID], function (error, rows, fields) {
+
+              if (error) {
+                  console.log(error);
+                  res.sendStatus(400);
+              } else {
+                  res.sendStatus(204);
+              }
+          })
+      }
+  })
+});
+
+app.delete('/delete-event-ajax/', function (req, res, next) {
+  let data = req.body;
+  let eventID = parseInt(data.id);
+  let deleteEvents = `DELETE FROM Events WHERE event_id = ?`;
+
+
+  // Run the 1st query
+  db.pool.query(deleteEvents, [eventID], function (error, rows, fields) {
+      if (error) {
+
+          // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+          console.log(error);
+          res.sendStatus(400);
+      }
+
+      else {
+          // Run the second query
+          res.sendStatus(204);
+
+          // db.pool.query(deleteEvents, [eventID], function (error, rows, fields) {
+
+          //     if (error) {
+          //         console.log(error);
+          //         res.sendStatus(400);
+          //     } else {
+          //         res.sendStatus(204);
+          //     }
+          // })
+      }
+  })
+});
+
+
+//------------------UPDATE HANDLERS------------------
 //UPDATE HANDLER FOR CUSTOMERS
 app.put('/put-person-ajax', function(req,res,next){   
   console.log(req.body);                                
@@ -430,6 +680,121 @@ app.put('/put-vendor-location-ajax', function(req,res,next){
                 })
             }
 })});
+
+//UPDATES
+//UPDATES
+app.put('/put-location-ajax', function (req, res, next) {
+  console.log(req.body);
+  let data = req.body;
+  console.log("made it")
+
+  let location = parseInt(data.name);
+  let active = parseInt(data.active);
+
+
+  queryUpdateLocation = `UPDATE Locations SET address = ?, phone = ?, active = ?  WHERE Locations.location_id = ?;`;
+  selectLocation = `SELECT * FROM Locations WHERE Locations.location_id = ?;`
+
+  // Run the 1st query
+  db.pool.query(queryUpdateLocation, [data.address, data.phone, data.active, location], function (error, rows, fields) {
+      if (error) {
+
+          // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+          console.log(error);
+          res.sendStatus(400);
+      }
+
+      // If there was no error, we run our second query and return the customer data to populate the table
+      else {
+          // Run the second query
+          db.pool.query(selectLocation, [location], function (error, rows, fields) {
+
+              if (error) {
+                  console.log(error);
+                  res.sendStatus(400);
+              } else {
+                  res.send(rows);
+              }
+          })
+      }
+  })
+});
+
+app.put('/put-vendor-ajax', function (req, res, next) {
+  console.log(req.body);
+  let data = req.body;
+  console.log("made it")
+
+  let vendor = parseInt(data.name);
+
+
+  queryUpdateVendor = `UPDATE Vendors SET events = ?, phone = ?, email = ?, billing_address = ?  WHERE Vendors.vendor_id = ?;`;
+  selectVendor = `SELECT * FROM Vendors WHERE Vendors.vendor_id = ?;`
+
+  // Run the 1st query
+  db.pool.query(queryUpdateVendor, [data.events, data.phone, data.email, data.address, vendor], function (error, rows, fields) {
+      if (error) {
+
+          // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+          console.log(error);
+          res.sendStatus(400);
+      }
+
+      // If there was no error, we run our second query and return the customer data to populate the table
+      else {
+          // Run the second query
+          db.pool.query(selectVendor, [vendor], function (error, rows, fields) {
+
+              if (error) {
+                  console.log(error);
+                  res.sendStatus(400);
+              } else {
+                  res.send(rows);
+              }
+          })
+      }
+  })
+});
+
+
+app.put('/put-event-ajax', function (req, res, next) {
+  console.log(req.body);
+  let data = req.body;
+  console.log("made it")
+
+  let event = parseInt(data.name);
+
+
+  queryUpdateEvent = `UPDATE Events SET name = ?, date = ?, Vendor_Locations_vendor_loc_id = ?  WHERE Events.event_id = ?;`;
+  selectEvent = `SELECT * FROM Events WHERE Events.event_id = ?;`
+
+  // Run the 1st query
+  db.pool.query(queryUpdateEvent, [data.name, data.date, data.location, event], function (error, rows, fields) {
+      if (error) {
+
+          // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+          console.log(error);
+          res.sendStatus(400);
+      }
+
+      // If there was no error, we run our second query and return the customer data to populate the table
+      else {
+          // Run the second query
+          db.pool.query(selectEvent, [event], function (error, rows, fields) {
+
+              if (error) {
+                  console.log(error);
+                  res.sendStatus(400);
+              } else {
+                  res.send(rows);
+              }
+          })
+      }
+  })
+});
+
+// Starting Coleton's additions
+
 
 
 /*
