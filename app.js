@@ -60,6 +60,16 @@ app.get('/customer-memberships', function(req, res)
 
 });
 
+app.get('/vendor-locations', function(req, res) 
+{
+    let query1 = "SELECT * FROM Vendor_Locations;";
+    db.pool.query(query1, function(error, rows, fields){
+        res.render('vendor_locations', {data: rows});
+  })
+
+});
+
+
 app.get('/locations', function(req, res) {
   res.sendFile(path.join(__dirname, '/views/locations.html'));
 });
@@ -78,7 +88,7 @@ app.get('/vendors', function(req, res) {
   res.sendFile(path.join(__dirname, '/views/vendors.html'));
 });
 
-// POST ROUTES
+// POST ROUTES FOR CUSTOMERS
 app.post('/add-person-ajax', function(req, res) 
 {
     // Capture the incoming data and parse it back to a JS object
@@ -178,8 +188,52 @@ app.post('/add-customer-membership-ajax', function(req, res)
 });
 
 
+// POST ROUTES FOR VENDOR LOCATIONS
+app.post('/add-vendor-location-ajax', function(req, res) 
+{
+    // Capture the incoming data and parse it back to a JS object
+    let data = req.body;
+
+    // Capture NULL values
 
 
+    // Create the query and run it on the database
+    query1 = `INSERT INTO Vendor_Locations (Vendors_vendor_id, Locations_location_id, rent) VALUES (${data.Vendors_vendor_id}, ${data.Locations_location_id}, ${data.rent})`;
+    db.pool.query(query1, function(error, rows, fields){
+
+        // Check to see if there was an error
+        if (error) {
+
+            // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+            console.log(error)
+            res.sendStatus(400);
+        }
+        else
+        {
+            // If there was no error, perform a SELECT * on bsg_people
+            query2 = `SELECT * FROM Vendor_Locations;`;
+            db.pool.query(query2, function(error, rows, fields){
+
+                // If there was an error on the second query, send a 400
+                if (error) {
+                    
+                    // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+                    console.log(error);
+                    res.sendStatus(400);
+                }
+                // If all went well, send the results of the query back.
+                else
+                {
+                    res.send(rows);
+                }
+            })
+        }
+    })
+});
+
+
+
+//DELETE ROUTES
 
 app.delete('/delete-person-ajax/', function(req,res,next){                                                                
   let data = req.body;
@@ -234,6 +288,30 @@ app.delete('/delete-customer-membership-ajax/', function(req,res,next){
 
 })});
 
+//DELETE routing for Vendor Locations
+
+app.delete('/delete-vendor-location-ajax/', function(req,res,next){                                                                
+  let data = req.body;
+  console.log(data)
+  let vendorLocId = parseInt(data.id);
+  let deleteVendorLoc = `DELETE FROM Vendor_Locations WHERE vendor_loc_id = ?`;
+
+
+        // Run the 1st query
+        db.pool.query(deleteVendorLoc, [vendorLocId], function(error, rows, fields){
+            if (error) {
+
+            // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+            console.log(error);
+            res.sendStatus(400);
+            } else {
+              res.sendStatus(204);
+          }
+
+})});
+
+
+//UPDATE HANDLER FOR CUSTOMERS
 app.put('/put-person-ajax', function(req,res,next){   
   console.log(req.body);                                
   let data = req.body;
@@ -301,6 +379,47 @@ app.put('/put-customer-membership-ajax', function(req,res,next){
             {
                 // Run the second query
                 db.pool.query(selectCustMems, [custMemId], function(error, rows, fields) {
+        
+                    if (error) {
+                        console.log(error);
+                        res.sendStatus(400);
+                    } else {
+                        res.send(rows);
+                    }
+                })
+            }
+})});
+
+// UPDATE handler for Vendor Locations
+
+app.put('/put-vendor-location-ajax', function(req,res,next){   
+  console.log(req.body);                                
+  let data = req.body;
+  console.log("made it")
+
+  let venLocId = parseInt(data.vendor_loc_id);
+  let vendorId = parseInt(data.Vendors_vendor_id);
+  let locationId = parseInt(data.Locations_location_id);
+  let rent = parseInt(data.rent);
+
+
+  queryUpdateVendorLoc = `UPDATE Vendor_Locations SET Vendors_vendor_id = ?, Locations_location_id = ?, rent = ? WHERE vendor_loc_id = ?;`;
+  selectVendorLocs = `SELECT * FROM Vendor_Locations WHERE vendor_loc_id = ?;`
+
+        // Run the 1st query
+        db.pool.query(queryUpdateVendorLoc, [vendorId, locationId, rent, venLocId], function(error, rows, fields){
+            if (error) {
+
+            // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+            console.log(error);
+            res.sendStatus(400);
+            }
+
+            // If there was no error, we run our second query and return the customer data to populate the table
+            else
+            {
+                // Run the second query
+                db.pool.query(selectVendorLocs, [venLocId], function(error, rows, fields) {
         
                     if (error) {
                         console.log(error);

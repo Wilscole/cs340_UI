@@ -1,0 +1,99 @@
+{{! Code Cited }}
+{{!starter code from osu-cs340 nodejs dev guide; modified to fit Customer entity }}
+{{!Source URL: https://github.com/osu-cs340-ecampus/nodejs-starter-app }}
+{{! Authors: George Kochera et al. }}
+{{! Date accessed: 11/8/22 }}
+
+
+
+<h1>Vendor Locations</h1>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+{{!-- The Data from our Database --}}
+
+{{!-- Create a table --}}
+<table id="vendor-location-table">
+
+    {{!-- Header section --}}
+    <thead>
+
+        {{!-- For just the first row, we print each key of the row object as a header cell so we
+        know what each column means when the page renders --}}
+        <tr>
+            {{#each data.[0]}}
+            <th>
+                {{@key}}
+            </th>
+            {{/each}}
+        </tr>
+    </thead>
+
+    {{!-- Body section --}}
+    <tbody>
+
+        {{!-- For each row, display the vendor locations's attributes, and a delete button --}}
+        {{#each data}}
+        <tr data-value={{this.vendor_loc_id}}>
+            <td>{{this.vendor_loc_id}}</td>
+            <td>{{this.Vendors_vendor_id}}</td>
+            <td>{{this.Locations_location_id}}</td>
+            <td>{{this.rent}}</td>
+            <td><button onclick="deleteVendorLocation({{this.vendor_loc_id}})">Delete</button></td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+<script src="./js/delete_vendor_location.js"></script>
+
+{{!-- Form to add a record to the table using AJAX --}}
+<h2>Adding a Vendor Location Record</h2>
+<p>To add a new Vendor Location to the database, please enter its information below and click 'Submit'!</p>
+<form id="add-vendor-location-form-ajax">
+    <label for="input-vendor-id">Vendor: </label>
+    <input type="text" name="input-vendor-id" id="input-vendor-id">
+    
+    <label for="input-location-id">Location: </label>
+    <input type="text" name="input-location-id" id="input-location-id">
+
+    <label for="input-rent">Monthly Rent: </label>
+    <input type="text" name="input-rent" id="input-rent">
+
+    <input type="submit">
+</form>
+
+{{!-- Embed our javascript to handle the DOM manipulation and AJAX request --}}
+<script src="./js/add_vendor_location.js"></script>
+
+
+
+
+<h2>Updating A Vendor Location's Information</h2>
+<p>To update a specific Vendor-Location information select their name from the drop-down menu on the left and input the required values</p>
+<form id="update-vendor-location-form-ajax">
+
+    <label for="input-vendor-loc">Full name: </label>
+    <select name="input-vendor-loc" id="mySelectVendorLoc">
+        <option value="test">Select a Vendor Location</option>
+        {{#each data}}
+        <option value="{{this.vendor_loc_id}}">{{this.vendor_loc_id}}</option>
+        {{/each}}
+    </select>
+
+    <label for="update-vendor-id">Vendor: </label>
+    <input type="text" name="update-vendor-id" id="update-vendor-id">
+
+    <label for="update-location-id">Location: </label>
+    <input type="text" name="update-location-id" id="update-location-id">
+
+    <label for="update-rent">Rent: </label>
+    <input type="text" name="update-rent" id="update-rent">
+
+
+    <input type="submit">
+
+
+
+</form>
+
+<script src="./js/update_vendor_location.js"></script>
