@@ -19,7 +19,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 //app.use(express.static(__dirname + '/views'));
 
-PORT = 52068;
+PORT = 52069;
 
 // Database
 var db = require('./database/db-connector');
