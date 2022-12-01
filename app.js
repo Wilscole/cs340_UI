@@ -19,7 +19,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 //app.use(express.static(__dirname + '/views'));
 
-PORT = 52069;
+PORT = 52068;
 
 // Database
 var db = require('./database/db-connector');
@@ -67,6 +67,34 @@ app.get('/customer-memberships', function(req, res)
           db.pool.query(query3, (error, rows, fields) => {
 
             let locations = rows;
+
+            // OVERWRITING CUSTOMER_ID IN CUST_MEM DATA WITH CUSTOMER FULL NAME
+            let customermap = {}
+            customers.map(customer => {
+              let id = parseInt(customer.customer_id, 10);
+              let full_name = `${customer.first_name} ${customer.last_name}`
+              customermap[id] = full_name
+            })
+
+
+
+
+            //OVERWRITING LOCATION_ID IN CUST_MEM DATA WITH LOCATION NAME
+            let locationmap = {}
+            locations.map(location => {
+              let id = parseInt(location.location_id, 10);
+              locationmap[id] = location.name
+            })
+
+
+            custMems = custMems.map(custMem => {
+              return Object.assign(custMem, 
+                {Customers_customer_id: customermap[custMem.Customers_customer_id]},
+                {Locations_location_id: locationmap[custMem.Locations_location_id]})
+            })
+
+
+
             res.render('customer_memberships', {data: custMems, customers: customers, locations: locations});
           })
 
@@ -90,6 +118,26 @@ app.get('/vendor-locations', function(req, res)
 
           db.pool.query(query3, function(error, rows, fields){
             let locations = rows;
+            
+            vendormap = {}
+            locationmap = {}
+            
+            vendors.map(vendor => {
+              let id = vendor.vendor_id
+              vendormap[id] = vendor.name
+            })
+
+            locations.map(location => {
+              let id = location.location_id
+              locationmap[id] = location.name
+            })
+
+            vendorLocs.map(vendorLoc => {
+              return Object.assign(vendorLoc, 
+                {Vendors_vendor_id: vendormap[vendorLoc.Vendors_vendor_id]},
+                {Locations_location_id: locationmap[vendorLoc.Locations_location_id]})
+            })
+
             res.render('vendor_locations', {data: vendorLocs, vendors: vendors, locations: locations});
           })
         })
