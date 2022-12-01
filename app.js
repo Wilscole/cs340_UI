@@ -168,15 +168,69 @@ app.get('/vendors', function (req, res) {
 
 app.get('/events', function (req, res) {
   let query1 = "SELECT * FROM Events;";               // Define our query
-  let query2 = "SELECT vendor_loc_id FROM Vendor_Locations"
+  let query2 = "SELECT * FROM Vendor_Locations";
+  let query3 = "SELECT * FROM Vendors";
+  let query4 = "SELECT * FROM Locations";
 
 
   db.pool.query(query1, function (error, rows, fields) {    // Execute the query
       let events = rows
+
       db.pool.query(query2, function (error, rows, fields) {    // Execute the query
+
           let locations = rows
-          res.render('events', { events: events, locations: locations });                  // Render the index.hbs file, and also send the renderer
-      })
+          db.pool.query(query3, function (error, rows, fields) {
+            let vendors = rows
+            
+            db.pool.query(query4, function (error, rows, fields) {
+              let locs = rows
+
+              let vendorMap = {}
+              let locMap = {}
+              let eventVendorMap = {}
+              let eventLocationMap = {}
+
+              vendors.map(vendor => {
+                let id = vendor.vendor_id
+                vendorMap[id] = vendor.name
+              })
+
+              locs.map( loc => {
+                let id = loc.location_id
+                locMap[id] = loc.name
+              })
+
+              //need to map vendor-location-id to the corresponding vendor & event
+              locations.map( location => {
+                let id = location.vendor_loc_id
+                eventVendorMap[id] = vendorMap[location.Vendors_vendor_id]
+                eventLocationMap[id] = locMap[location.Locations_location_id]
+              })
+
+              console.log(vendorMap)
+              console.log(locMap)
+              console.log(locations)
+
+              events.map (event => {
+                let id = event.Vendor_Locations_vendor_loc_id
+                return Object.assign(event, 
+                                      {Vendor_Locations_vendor_loc_id: 
+                                        `${eventVendorMap[id]} - ${eventLocationMap[id]}`})
+              })
+
+              locations.map (location => {
+                let id = location.vendor_loc_id
+                return Object.assign(location, 
+                                      {Vendors_vendor_id: vendorMap[location.Vendors_vendor_id]},
+                                        {Locations_location_id: locMap[location.Locations_location_id]})
+              })
+              //console.log(locations)
+              res.render('events', { events: events, locations: locations, vendors: vendorMap, loc: locMap });                  // Render the index.hbs file, and also send the renderer
+            })
+          })
+          
+      
+        })
   })                                                 // an object where 'data' is equal to the 'rows' we
 });
 
