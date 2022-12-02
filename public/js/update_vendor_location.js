@@ -107,8 +107,10 @@ function updateRow(data, venLocID){
             let rentTD = updateRowIndex.getElementsByTagName("td")[3];
 
             // Reassign homeworld to our value we updated to
-            vendorIdTD.innerHTML = parsedData[0].Vendors_vendor_id; 
-            locationIdTD.innerHTML = parsedData[0].Locations_location_id; 
+            //vendorIdTD.innerHTML = parsedData[0].Vendors_vendor_id; 
+            vendorIdTD.innerHTML = parsedData[0].vendor_name; 
+            //locationIdTD.innerHTML = parsedData[0].Locations_location_id;
+            locationIdTD.innerHTML = parsedData[0].location_name; 
             rentTD.innerHTML = parsedData[0].rent; 
 
        }

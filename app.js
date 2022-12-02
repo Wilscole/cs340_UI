@@ -764,8 +764,12 @@ app.put('/put-customer-membership-ajax', function(req,res,next){
 
 
   queryUpdateCustMem = `UPDATE Customer_Memberships SET Customers_customer_id = ?, Locations_location_id = ?, membership_fee = ? WHERE customer_membership_id = ?;`;
-  selectCustMems = `SELECT * FROM Customer_Memberships WHERE customer_membership_id = ?;`
-
+  //selectCustMems = `SELECT * FROM Customer_Memberships WHERE customer_membership_id = ?;`
+  selectCustMems = `SELECT customer_membership_id, CONCAT(first_name, " ", last_name) AS customer_name, Locations.name AS location_name, membership_fee ` +
+  `FROM Customer_Memberships ` +
+  `INNER JOIN Customers ON Customer_Memberships.Customers_customer_id = Customers.customer_id ` +
+  `INNER JOIN Locations ON Customer_Memberships.Locations_location_id = Locations.location_id ` +
+  `WHERE customer_membership_id = ?;`
         // Run the 1st query
         db.pool.query(queryUpdateCustMem, [custId, locId, membFee, custMemId], function(error, rows, fields){
             if (error) {
@@ -796,6 +800,7 @@ app.put('/put-customer-membership-ajax', function(req,res,next){
 app.put('/put-vendor-location-ajax', function(req,res,next){   
   console.log(req.body);                                
   let data = req.body;
+  //data = object with ven-loc-id, vendor-id, location-id, rent
   console.log("made it")
 
   let venLocId = parseInt(data.vendor_loc_id);
@@ -805,8 +810,12 @@ app.put('/put-vendor-location-ajax', function(req,res,next){
 
 
   queryUpdateVendorLoc = `UPDATE Vendor_Locations SET Vendors_vendor_id = ?, Locations_location_id = ?, rent = ? WHERE vendor_loc_id = ?;`;
-  selectVendorLocs = `SELECT * FROM Vendor_Locations WHERE vendor_loc_id = ?;`
-
+  //selectVendorLocs = `SELECT * FROM Vendor_Locations WHERE vendor_loc_id = ?;`
+  selectVendorLocs = `SELECT vendor_loc_id, Vendors.name AS vendor_name, Locations.name AS location_name, rent ` +
+  `FROM Vendor_Locations ` +
+  `INNER JOIN Vendors ON Vendor_Locations.Vendors_vendor_id = Vendors.vendor_id ` +
+  `INNER JOIN Locations ON Vendor_Locations.Locations_location_id = Locations.location_id ` +
+  `WHERE vendor_loc_id = ?;`
         // Run the 1st query
         db.pool.query(queryUpdateVendorLoc, [vendorId, locationId, rent, venLocId], function(error, rows, fields){
             if (error) {
@@ -916,8 +925,14 @@ app.put('/put-event-ajax', function (req, res, next) {
   let event = parseInt(data.name);
 
 
-  queryUpdateEvent = `UPDATE Events SET date = ? WHERE Events.event_id = ?;`;
-  selectEvent = `SELECT * FROM Events WHERE Events.event_id = ?;`
+  let queryUpdateEvent = `UPDATE Events SET date = ? WHERE Events.event_id = ?;`;
+  //selectEvent = `SELECT * FROM Events WHERE Events.event_id = ?;`
+  let selectEvent = `SELECT event_id, Events.name, Events.date, Vendors.name AS vendor_name, Locations.name AS location_name ` +
+  `FROM Events ` +
+  `INNER JOIN Vendor_Locations ON Events.Vendor_Locations_vendor_loc_id = Vendor_Locations.vendor_loc_id ` +
+  `INNER JOIN Vendors ON Vendor_Locations.Vendors_vendor_id = Vendors.vendor_id ` +
+  `INNER JOIN Locations ON Vendor_Locations.Locations_location_id = Locations.location_id ` +
+  `WHERE Events.event_id = ?`
 
   // Run the 1st query
   db.pool.query(queryUpdateEvent, [data.name, data.date, event], function (error, rows, fields) {

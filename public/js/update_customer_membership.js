@@ -102,8 +102,10 @@ function updateRow(data, custMemID){
 
 
             // Reassign homeworld to our value we updated to
-            custIdTD.innerHTML = parsedData[0].Customers_customer_id; 
-            locationTD.innerHTML = parsedData[0].Locations_location_id; 
+            //custIdTD.innerHTML = parsedData[0].Customers_customer_id;
+            custIdTD.innerHTML = parsedData[0].customer_name; 
+            //locationTD.innerHTML = parsedData[0].Locations_location_id; 
+            locationTD.innerHTML = parsedData[0].location_name;
             membFeeTD.innerHTML = parsedData[0].membership_fee; 
 
        }
