@@ -88,8 +88,10 @@ addRowToTable = (data) => {
 
     // Fill the cells with correct data
     idCell.innerText = newRow.customer_membership_id;
-    custIdCell.innerText = newRow.Customers_customer_id;
-    locIdCell.innerText = newRow.Locations_location_id;
+    //custIdCell.innerText = newRow.Customers_customer_id;
+    //locIdCell.innerText = newRow.Locations_location_id;
+    custIdCell.innerText = newRow.full_name;
+    locIdCell.innerText = newRow.name;
     membFeeCell.innerText = newRow.membership_fee;
 
 

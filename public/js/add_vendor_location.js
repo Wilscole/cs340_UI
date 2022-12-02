@@ -90,8 +90,10 @@ addRowToTable = (data) => {
 
     // Fill the cells with correct data
     idCell.innerText = newRow.vendor_loc_id;
-    vendorCell.innerText = newRow.Vendors_vendor_id;
-    locationCell.innerText = newRow.Locations_location_id;
+    //vendorCell.innerText = newRow.Vendors_vendor_id;
+    vendorCell.innerText = newRow.vendor_name;
+    //locationCell.innerText = newRow.Locations_location_id;
+    locationCell.innerText = newRow.location_name;
     rentCell.innerText = newRow.rent;
 
 

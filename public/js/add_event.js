@@ -92,9 +92,11 @@ addRowToTable = (data) => {
 
     // Fill the cells with correct data
     idCell.innerText = newRow.event_id;
-    nameCell.innerText = newRow.name;
+    //nameCell.innerText = newRow.name;
+    nameCell.innerText = newRow.event_name;
     dateCell.innerText = newRow.date;
-    locationCell.innerText = newRow.location;
+    //locationCell.innerText = newRow.location;
+    locationCell.innerText = `${newRow.vendor_name} - ${newRow.location_name}`
     deleteCell = document.createElement("button");
     deleteCell.innerHTML = "Delete";
     deleteCell.onclick = function () {

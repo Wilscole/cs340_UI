@@ -317,9 +317,14 @@ app.post('/add-customer-membership-ajax', function(req, res)
         else
         {
             // If there was no error, perform a SELECT * on bsg_people
-            query2 = `SELECT * FROM Customer_Memberships;`;
-            db.pool.query(query2, function(error, rows, fields){
 
+            //query2 = `SELECT * FROM Customer_Memberships;`;
+            query2 = `SELECT customer_membership_id, membership_fee, CONCAT(first_name, " ", last_name) AS full_name, name `+
+            `FROM Customer_Memberships ` +
+            `INNER JOIN Customers ON Customer_Memberships.Customers_customer_id = Customers.customer_id ` +
+            `INNER JOIN Locations ON Customer_Memberships.Locations_location_id = Locations.location_id ` +
+            `ORDER BY customer_membership_id ASC`
+            db.pool.query(query2, function(error, rows, fields){
                 // If there was an error on the second query, send a 400
                 if (error) {
                     
@@ -361,7 +366,14 @@ app.post('/add-vendor-location-ajax', function(req, res)
         else
         {
             // If there was no error, perform a SELECT * on bsg_people
-            query2 = `SELECT * FROM Vendor_Locations;`;
+            
+            //query2 = `SELECT * FROM Vendor_Locations;`;
+
+            query2 = `SELECT vendor_loc_id, rent, Vendors.name AS vendor_name, Locations.name AS location_name ` +
+            `FROM Vendor_Locations ` +
+            `INNER JOIN Vendors ON Vendor_Locations.Vendors_vendor_id = Vendors.vendor_id ` +
+            `INNER JOIN Locations ON Vendor_Locations.Locations_location_id = Locations.location_id ` +
+            `ORDER BY vendor_loc_id ASC `
             db.pool.query(query2, function(error, rows, fields){
 
                 // If there was an error on the second query, send a 400
@@ -488,7 +500,14 @@ app.post('/add-event-ajax', function (req, res) {
       }
       else {
           // If there was no error, perform a SELECT * on bsg_people
-          query2 = `SELECT * FROM Events;`;
+          
+          //query2 = `SELECT * FROM Events;`;
+          query2 = `SELECT event_id, Events.name as event_name, Events.date as event_date, Vendors.name as vendor_name, Locations.name as location_name ` +
+          `FROM Events ` +
+          `INNER JOIN Vendor_Locations ON Events.Vendor_Locations_vendor_loc_id = Vendor_Locations.vendor_loc_id ` +
+          `INNER JOIN Locations ON Vendor_Locations.Locations_location_id = Locations.location_id ` +
+          `INNER JOIN Vendors ON Vendor_Locations.Vendors_vendor_id = Vendors.vendor_id ` +
+          `ORDER BY Events.event_id ASC` 
           db.pool.query(query2, function (error, rows, fields) {
 
               // If there was an error on the second query, send a 400
