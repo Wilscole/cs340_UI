@@ -113,7 +113,7 @@ function updateRow(data, vendorID) {
 
             // Reassign homeworld to our value we updated to
             phoneTD.innerHTML = parsedData[0].phone;
-            addressTD.innerHTML = parsedData[0].address;
+            addressTD.innerHTML = parsedData[0].billing_address;
             eventsTD.innerHTML = parsedData[0].events;
             emailTD.innerHTML = parsedData[0].email;
 

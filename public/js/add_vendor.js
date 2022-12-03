@@ -101,7 +101,7 @@ addRowToTable = (data) => {
     // Fill the cells with correct data
     idCell.innerText = newRow.vendor_id;
     nameCell.innerText = newRow.name;
-    addressCell.innerText = newRow.address;
+    addressCell.innerText = newRow.billing_address;
     phoneCell.innerText = newRow.phone;
     eventsCell.innerText = newRow.events;
     emailCell.innerText = newRow.email

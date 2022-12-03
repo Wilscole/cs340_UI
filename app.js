@@ -935,7 +935,7 @@ app.put('/put-event-ajax', function (req, res, next) {
   `WHERE Events.event_id = ?`
 
   // Run the 1st query
-  db.pool.query(queryUpdateEvent, [data.name, data.date, event], function (error, rows, fields) {
+  db.pool.query(queryUpdateEvent, [data.date, event], function (error, rows, fields) {
       if (error) {
 
           // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.

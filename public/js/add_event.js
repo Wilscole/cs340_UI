@@ -94,13 +94,13 @@ addRowToTable = (data) => {
     idCell.innerText = newRow.event_id;
     //nameCell.innerText = newRow.name;
     nameCell.innerText = newRow.event_name;
-    dateCell.innerText = newRow.date;
+    dateCell.innerText = newRow.event_date;
     //locationCell.innerText = newRow.location;
     locationCell.innerText = `${newRow.vendor_name} - ${newRow.location_name}`
     deleteCell = document.createElement("button");
     deleteCell.innerHTML = "Delete";
     deleteCell.onclick = function () {
-        deleteVendor(newRow.event_id);
+        deleteEvent(newRow.event_id);
     };
 
     // Add the cells to the row 
