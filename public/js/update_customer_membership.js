@@ -28,6 +28,10 @@ updateCustMemForm.addEventListener("submit", function (e) {
     let membershipFeeValue = inputMembershipFee.value;
     let addOnIdValue = inputAddOnId.value;
 
+    if (addOnIdValue === "NO ADD ON" || addOnIdValue === ""){
+      addOnIdValue = "Null";
+    }
+
 
 
     

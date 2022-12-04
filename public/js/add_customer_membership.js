@@ -25,6 +25,10 @@ addCustMemForm.addEventListener("submit", function (e) {
     let membFeeValue = inputMembFee.value;
     let addOnIdValue = inputAddOn.value;
 
+    if (addOnIdValue === "NO ADD ON" || addOnIdValue === ""){
+      addOnIdValue = "Null";
+    }
+
 
     // Put our data we want to send in a javascript object
     let data = {

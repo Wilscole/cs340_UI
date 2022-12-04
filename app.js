@@ -349,8 +349,15 @@ app.post('/add-customer-membership-ajax', function(req, res)
         membershipFee = 0
     }
 
+    if (data.add_on_id === "Null") {
+      add_on_id = null;
+    }
+    else {
+      add_on_id = `"${data.add_on_id}"`
+    }
+
     // Create the query and run it on the database
-    query1 = `INSERT INTO Customer_Memberships (Customers_customer_id, Locations_location_id, membership_fee, add_on_id) VALUES (${data.Customers_customer_id}, ${data.Locations_location_id}, ${data.membership_fee}, "${data.add_on_id}")`;
+    query1 = `INSERT INTO Customer_Memberships (Customers_customer_id, Locations_location_id, membership_fee, add_on_id) VALUES (${data.Customers_customer_id}, ${data.Locations_location_id}, ${data.membership_fee}, ${add_on_id})`;
     db.pool.query(query1, function(error, rows, fields){
 
         // Check to see if there was an error
@@ -850,9 +857,17 @@ app.put('/put-customer-membership-ajax', function(req,res,next){
   let custId = parseInt(data.Customers_customer_id);
   let locId = parseInt(data.Locations_location_id);
   let membFee = parseInt(data.membership_fee);
+  let add_on_id;
+
+  if (data.add_on_id === "Null") {
+    add_on_id = null;
+  }
+  else {
+    add_on_id = `${data.add_on_id}`
+  }
 
 
-  queryUpdateCustMem = `UPDATE Customer_Memberships SET Customers_customer_id = ?, Locations_location_id = ?, membership_fee = ?, add_on_id = "${data.add_on_id}" WHERE customer_membership_id = ?;`;
+  queryUpdateCustMem = `UPDATE Customer_Memberships SET Customers_customer_id = ?, Locations_location_id = ?, membership_fee = ?, add_on_id = ? WHERE customer_membership_id = ?;`;
   //selectCustMems = `SELECT * FROM Customer_Memberships WHERE customer_membership_id = ?;`
   selectCustMems = `SELECT customer_membership_id, CONCAT(first_name, " ", last_name) AS customer_name, Locations.name AS location_name, membership_fee, add_on_id ` +
   `FROM Customer_Memberships ` +
@@ -860,7 +875,7 @@ app.put('/put-customer-membership-ajax', function(req,res,next){
   `INNER JOIN Locations ON Customer_Memberships.Locations_location_id = Locations.location_id ` +
   `WHERE customer_membership_id = ?;`
         // Run the 1st query
-        db.pool.query(queryUpdateCustMem, [custId, locId, membFee, custMemId], function(error, rows, fields){
+        db.pool.query(queryUpdateCustMem, [custId, locId, membFee, add_on_id, custMemId], function(error, rows, fields){
             if (error) {
 
             // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
