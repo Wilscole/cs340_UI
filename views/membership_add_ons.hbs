@@ -1,0 +1,75 @@
+{{! Code Cited }}
+{{!starter code from osu-cs340 nodejs dev guide; modified to fit Customer entity }}
+{{!Source URL: https://github.com/osu-cs340-ecampus/nodejs-starter-app }}
+{{! Authors: George Kochera et al. }}
+{{! Date accessed: 11/8/22 }}
+
+
+<link rel="stylesheet" href="./css/style.css"> 
+
+
+<nav align="center" style=" padding-bottom: 10pt; padding-top: 10pt; width:50%; margin-right:25%; margin-left:25%">
+    <a href="index.html">Home Page</a>
+    <a href="/locations">Locations</a>
+    <a href="/customers">Customers</a>
+    <a href="/vendors">Vendors</a>
+    <a href="/events">Events</a>
+    <a href="/customer-memberships">Customer Memberships</a>
+    <a href="/membership-add-ons">Membership Add Ons</a>
+    <a href="/vendor-locations">Vendor Locations</a>
+</nav>
+
+<h1>Membership Add-Ons</h1>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+{{!-- The Data from our Database --}}
+
+{{!-- Create a table --}}
+<table id="membership-add-on-table">
+
+    {{!-- Header section --}}
+    <thead>
+
+        {{!-- For just the first row, we print each key of the row object as a header cell so we
+        know what each column means when the page renders --}}
+        <tr>
+            {{#each data.[0]}}
+            <th>
+                {{@key}}
+            </th>
+            {{/each}}
+        </tr>
+    </thead>
+
+    {{!-- Body section --}}
+    <tbody>
+
+        {{!-- For each row, display the customer's attributes, and a delete button --}}
+        {{#each data}}
+        <tr data-value={{this.add_on_id}}>
+            <td>{{this.add_on_id}}</td>
+            <td>{{this.description}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+{{!-- Form to add a record to the table using AJAX --}}
+<h2>Adding a Membership Add-On</h2>
+<p>To add a new Add-On to the database, please enter it's ID and Description below and click 'Submit'!</p>
+<form id="add-membership-add-on-form-ajax">
+    <label for="input-add-on-id">Add-On ID: </label>
+    <input type="text" name="input-add-on-id" id="input-add-on-id">
+    
+    <label for="input-description">Description of the Add-On: </label>
+    <input type="text" name="input-add-on-description" id="input-add-on-description">
+
+    <input type="submit">
+</form>
+
+{{!-- Embed our javascript to handle the DOM manipulation and AJAX request --}}
+<script src="./js/add_membership_add_on.js"></script>
+
+
+

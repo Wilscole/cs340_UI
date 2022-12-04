@@ -18,7 +18,7 @@ updateCustMemForm.addEventListener("submit", function (e) {
     let inputCustId = document.getElementById("update-cust-id");
     let inputLocation = document.getElementById("update-location");
     let inputMembershipFee = document.getElementById("update-membership-fee");
-
+    let inputAddOnId = document.getElementById("update-add-on-id")
 
     // Get the values from the form fields
 
@@ -26,6 +26,7 @@ updateCustMemForm.addEventListener("submit", function (e) {
     let custIdValue = inputCustId.value;
     let locationValue = inputLocation.value;
     let membershipFeeValue = inputMembershipFee.value;
+    let addOnIdValue = inputAddOnId.value;
 
 
 
@@ -50,7 +51,8 @@ updateCustMemForm.addEventListener("submit", function (e) {
         customer_membership_id: custMemValue,
         Customers_customer_id: custIdValue,
         Locations_location_id: locationValue,
-        membership_fee: membershipFeeValue
+        membership_fee: membershipFeeValue,
+        add_on_id: addOnIdValue
   
 
     };
@@ -99,7 +101,7 @@ function updateRow(data, custMemID){
             let custIdTD = updateRowIndex.getElementsByTagName("td")[1];
             let locationTD = updateRowIndex.getElementsByTagName("td")[2];
             let membFeeTD = updateRowIndex.getElementsByTagName("td")[3];
-
+            let addOnTD = updateRowIndex.getElementsByTagName("td")[4];
 
             // Reassign homeworld to our value we updated to
             //custIdTD.innerHTML = parsedData[0].Customers_customer_id;
@@ -107,6 +109,7 @@ function updateRow(data, custMemID){
             //locationTD.innerHTML = parsedData[0].Locations_location_id; 
             locationTD.innerHTML = parsedData[0].location_name;
             membFeeTD.innerHTML = parsedData[0].membership_fee; 
+            addOnTD.innerHTML = parsedData[0].add_on_id;
 
        }
     }

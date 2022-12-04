@@ -51,11 +51,20 @@ app.get('/customers', function(req, res)
     })
 });
 
+app.get('/membership-add-ons', function(req, res)
+{
+  let query1 = "SELECT * FROM Membership_Add_Ons;";
+  db.pool.query(query1, function(error, rows, fields){
+    res.render('membership_add_ons', {data: rows});
+  })
+});
+
 app.get('/customer-memberships', function(req, res) 
 {
     let query1 = "SELECT * FROM Customer_Memberships;";
     let query2 = "SELECT * FROM Customers;";
     let query3 = "SELECT * FROM Locations";
+    let query4 = "SELECT * FROM Membership_Add_Ons"
 
     db.pool.query(query1, function(error, rows, fields){
 
@@ -68,34 +77,41 @@ app.get('/customer-memberships', function(req, res)
 
             let locations = rows;
 
-            // OVERWRITING CUSTOMER_ID IN CUST_MEM DATA WITH CUSTOMER FULL NAME
-            let customermap = {}
-            customers.map(customer => {
-              let id = parseInt(customer.customer_id, 10);
-              let full_name = `${customer.first_name} ${customer.last_name}`
-              customermap[id] = full_name
+            db.pool.query(query4, (error, rows, fields) => {
+
+              let addons = rows;
+
+              // OVERWRITING CUSTOMER_ID IN CUST_MEM DATA WITH CUSTOMER FULL NAME
+              let customermap = {}
+              customers.map(customer => {
+                let id = parseInt(customer.customer_id, 10);
+                let full_name = `${customer.first_name} ${customer.last_name}`
+                customermap[id] = full_name
+              })
+
+
+
+
+              //OVERWRITING LOCATION_ID IN CUST_MEM DATA WITH LOCATION NAME
+              let locationmap = {}
+              locations.map(location => {
+                let id = parseInt(location.location_id, 10);
+                locationmap[id] = location.name
+              })
+
+
+              custMems = custMems.map(custMem => {
+                return Object.assign(custMem, 
+                  {Customers_customer_id: customermap[custMem.Customers_customer_id]},
+                  {Locations_location_id: locationmap[custMem.Locations_location_id]})
+              })
+
+
+
+              res.render('customer_memberships', {data: custMems, customers: customers, locations: locations, addons: addons});
+
             })
 
-
-
-
-            //OVERWRITING LOCATION_ID IN CUST_MEM DATA WITH LOCATION NAME
-            let locationmap = {}
-            locations.map(location => {
-              let id = parseInt(location.location_id, 10);
-              locationmap[id] = location.name
-            })
-
-
-            custMems = custMems.map(custMem => {
-              return Object.assign(custMem, 
-                {Customers_customer_id: customermap[custMem.Customers_customer_id]},
-                {Locations_location_id: locationmap[custMem.Locations_location_id]})
-            })
-
-
-
-            res.render('customer_memberships', {data: custMems, customers: customers, locations: locations});
           })
 
         })
@@ -334,7 +350,7 @@ app.post('/add-customer-membership-ajax', function(req, res)
     }
 
     // Create the query and run it on the database
-    query1 = `INSERT INTO Customer_Memberships (Customers_customer_id, Locations_location_id, membership_fee) VALUES (${data.Customers_customer_id}, ${data.Locations_location_id}, ${data.membership_fee})`;
+    query1 = `INSERT INTO Customer_Memberships (Customers_customer_id, Locations_location_id, membership_fee, add_on_id) VALUES (${data.Customers_customer_id}, ${data.Locations_location_id}, ${data.membership_fee}, "${data.add_on_id}")`;
     db.pool.query(query1, function(error, rows, fields){
 
         // Check to see if there was an error
@@ -349,12 +365,55 @@ app.post('/add-customer-membership-ajax', function(req, res)
             // If there was no error, perform a SELECT * on bsg_people
 
             //query2 = `SELECT * FROM Customer_Memberships;`;
-            query2 = `SELECT customer_membership_id, membership_fee, CONCAT(first_name, " ", last_name) AS full_name, name `+
+            query2 = `SELECT customer_membership_id, membership_fee, CONCAT(first_name, " ", last_name) AS full_name, name, add_on_id `+
             `FROM Customer_Memberships ` +
             `INNER JOIN Customers ON Customer_Memberships.Customers_customer_id = Customers.customer_id ` +
             `INNER JOIN Locations ON Customer_Memberships.Locations_location_id = Locations.location_id ` +
             `ORDER BY customer_membership_id ASC`
             db.pool.query(query2, function(error, rows, fields){
+                // If there was an error on the second query, send a 400
+                if (error) {
+                    
+                    // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+                    console.log(error);
+                    res.sendStatus(400);
+                }
+                // If all went well, send the results of the query back.
+                else
+                {
+                    res.send(rows);
+                }
+            })
+        }
+    })
+});
+
+// POST ROUTE FOR MEMBERSHIP-ADD-ONS
+app.post('/add-membership-add-on-ajax', function(req, res) 
+{
+    // Capture the incoming data and parse it back to a JS object
+    let data = req.body;
+
+    // Capture NULL values
+
+
+    // Create the query and run it on the database
+    query1 = `INSERT INTO Membership_Add_Ons (add_on_id, description) VALUES ('${data.add_on_id}', '${data.description}')`;
+    db.pool.query(query1, function(error, rows, fields){
+
+        // Check to see if there was an error
+        if (error) {
+
+            // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+            console.log(error)
+            res.sendStatus(400);
+        }
+        else
+        {
+            // If there was no error, perform a SELECT * on bsg_people
+            query2 = `SELECT * FROM Membership_Add_Ons;`;
+            db.pool.query(query2, function(error, rows, fields){
+
                 // If there was an error on the second query, send a 400
                 if (error) {
                     
@@ -793,9 +852,9 @@ app.put('/put-customer-membership-ajax', function(req,res,next){
   let membFee = parseInt(data.membership_fee);
 
 
-  queryUpdateCustMem = `UPDATE Customer_Memberships SET Customers_customer_id = ?, Locations_location_id = ?, membership_fee = ? WHERE customer_membership_id = ?;`;
+  queryUpdateCustMem = `UPDATE Customer_Memberships SET Customers_customer_id = ?, Locations_location_id = ?, membership_fee = ?, add_on_id = "${data.add_on_id}" WHERE customer_membership_id = ?;`;
   //selectCustMems = `SELECT * FROM Customer_Memberships WHERE customer_membership_id = ?;`
-  selectCustMems = `SELECT customer_membership_id, CONCAT(first_name, " ", last_name) AS customer_name, Locations.name AS location_name, membership_fee ` +
+  selectCustMems = `SELECT customer_membership_id, CONCAT(first_name, " ", last_name) AS customer_name, Locations.name AS location_name, membership_fee, add_on_id ` +
   `FROM Customer_Memberships ` +
   `INNER JOIN Customers ON Customer_Memberships.Customers_customer_id = Customers.customer_id ` +
   `INNER JOIN Locations ON Customer_Memberships.Locations_location_id = Locations.location_id ` +

@@ -14,6 +14,7 @@
     <a href="/vendors">Vendors</a>
     <a href="/events">Events</a>
     <a href="/customer-memberships">Customer Memberships</a>
+    <a href="/membership-add-ons">Membership Add Ons</a>
     <a href="/vendor-locations">Vendor Locations</a>
 </nav>
 
@@ -54,6 +55,7 @@
             <td>{{this.Customers_customer_id}}</td>
             <td>{{this.Locations_location_id}}</td>
             <td>{{this.membership_fee}}</td>
+            <td>{{this.add_on_id}}</td>
             <td><button onclick="deleteCustomerMembership({{this.customer_membership_id}})">Delete</button></td>
         </tr>
         {{/each}}
@@ -90,6 +92,14 @@
 
     <label for="input-memb-fee">Monthly Membership Fee: </label>
     <input type="text" name="input-memb-fee" id="input-memb-fee">
+
+    <label for="input-add-on-id">Member Add-On: </label>
+    <select name="input-add-on-id" id="input-add-on-id">
+        <option value="">Select an Add-On</option>
+        {{#each addons}}
+        <option value="{{this.add_on_id}}">{{this.add_on_id}}</option>
+        {{/each}}
+    </select>
 
     <input type="submit">
 </form>
@@ -139,7 +149,13 @@
     <label for="update-membership-fee">Membership Fee: </label>
     <input type="text" name="update-membership-fee" id="update-membership-fee">
 
-
+    <label for="update-add-on-id">Member Add-On: </label>
+    <select name="update-add-on-id" id="update-add-on-id">
+        <option value="">Select an Add-On</option>
+        {{#each addons}}
+        <option value="{{this.add_on_id}}">{{this.add_on_id}}</option>
+        {{/each}}
+    </select>
     
 
     <input type="submit">
