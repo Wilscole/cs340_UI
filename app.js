@@ -2,10 +2,25 @@
 //Group 11
 
 //Code Cited 
-//starter code from osu-cs340 nodejs dev guide; modified to fit Customer entity
+//starter code from osu-cs340 nodejs dev guide; 
+// Route Handlers from guide used as Templates
+// Query and aliasing functions from guide adapted for each entity
 //Source URL: https://github.com/osu-cs340-ecampus/nodejs-starter-app
 // Authors: George Kochera et al. 
 // Date accessed: 11/8/22
+
+/*
+Route Handler Table of Contents (by code line)
+
+                Read   ADD   DELETE    UPDATE
+Customer      |  60  | 331 | 674   |  894     |
+Cust.Mems     |  80  | 381 | 706   |  932     |
+Member Add ON |  70  | 442 | 728   |  ---     |
+Locations     |  194 | 536 | 784   |  1033    |
+Vendors       |  208 | 582 | 827   |  1071    |
+Vend.Locs     |  145 | 486 | 762   |  986     |
+Events        |  218 | 623 | 859   |  1108    |
+*/
 
 /*
     SETUP
@@ -40,9 +55,9 @@ app.use(express.static('public'));
 */
 
 
-// GET ROUTES
+//--------------- GET ROUTES------------------
 
-
+// Populate Customer Data
 app.get('/customers', function(req, res)
 {
     let query1 = "SELECT * FROM Customers;";
@@ -52,6 +67,7 @@ app.get('/customers', function(req, res)
     })
 });
 
+// Populate Member Add On Data
 app.get('/membership-add-ons', function(req, res)
 {
   let query1 = "SELECT * FROM Membership_Add_Ons;";
@@ -61,6 +77,7 @@ app.get('/membership-add-ons', function(req, res)
   })
 });
 
+// Populate Customer Membership Data
 app.get('/customer-memberships', function(req, res) 
 {
     let query1 = "SELECT * FROM Customer_Memberships;";
@@ -101,7 +118,7 @@ app.get('/customer-memberships', function(req, res)
                 locationmap[id] = location.name
               })
 
-
+              //Overwriting the alias data from Location and Vendors onto the Customer membership
               custMems = custMems.map(custMem => {
                 return Object.assign(custMem, 
                   {Customers_customer_id: customermap[custMem.Customers_customer_id]},
@@ -124,6 +141,8 @@ app.get('/customer-memberships', function(req, res)
 
 });
 
+
+// Populate Vendor Location Data
 app.get('/vendor-locations', function(req, res) 
 {
     let query1 = "SELECT * FROM Vendor_Locations;";
@@ -142,16 +161,19 @@ app.get('/vendor-locations', function(req, res)
             vendormap = {}
             locationmap = {}
             
+            //Mapping vendor name to vendor id
             vendors.map(vendor => {
               let id = vendor.vendor_id
               vendormap[id] = vendor.name
             })
 
+            //Mapping location name to location id
             locations.map(location => {
               let id = location.location_id
               locationmap[id] = location.name
             })
 
+            //Mapping vendor name and location name to vendor location object
             vendorLocs.map(vendorLoc => {
               return Object.assign(vendorLoc, 
                 {Vendors_vendor_id: vendormap[vendorLoc.Vendors_vendor_id]},
@@ -169,6 +191,7 @@ app.get('/vendor-locations', function(req, res)
 });
 
 
+// Populate Location Data
 app.get('/locations', function (req, res) {
   let query1 = "SELECT * FROM Locations;";               // Define our query
 
@@ -180,6 +203,8 @@ app.get('/locations', function (req, res) {
   })                                                      // an object where 'data' is equal to the 'rows' we
 });
 
+
+// Populate Vendor Data
 app.get('/vendors', function (req, res) {
   let query1 = "SELECT * FROM Vendors;";               // Define our query
 
@@ -190,12 +215,14 @@ app.get('/vendors', function (req, res) {
   })                                                      // an object where 'data' is equal to the 'rows' we
 });
 
+//Populate Event Data
 app.get('/events', function (req, res) {
 
   let query1;
   console.log(req.query.customer_id)
 
-  //if (req.query.customer_id === undefined)
+  //DYNAMIC SEARCH
+  //if the query is empty, we populate all data. Else, populate filtered data
   if (!req.query.customer_id)
     {
       query1 = "SELECT * FROM Events;"
@@ -203,6 +230,7 @@ app.get('/events', function (req, res) {
   
   else
   {
+    //queries for all events at the locations where a customer is a member at
     query1 =  `SELECT Events.event_id, Events.name, Events.date, Events.Vendor_Locations_vendor_loc_id  ` +
               `FROM Customers INNER JOIN Customer_Memberships ON Customers.customer_id = Customer_Memberships.Customers_customer_id `+
               `INNER JOIN Vendor_Locations ON Customer_Memberships.Locations_location_id = Vendor_Locations.Locations_location_id `+
@@ -260,7 +288,7 @@ app.get('/events', function (req, res) {
                 })
 
 
-
+                // Maps vendor location name to Each event
                 events.map (event => {
                   let id = event.Vendor_Locations_vendor_loc_id
                   return Object.assign(event, 
@@ -268,6 +296,7 @@ app.get('/events', function (req, res) {
                                           `${eventVendorMap[id]} - ${eventLocationMap[id]}`})
                 })
 
+                //Formats the date properly for display
                 events.map (event => {
                   let newDate = new Date(event.date).toDateString()
                   return Object.assign(event, {date: newDate})
@@ -298,7 +327,7 @@ app.get('/events', function (req, res) {
 
 
 
-// ------------ADD ROUTES----------------
+// -----------------------ADD ROUTES----------------
 // POST ROUTES FOR CUSTOMERS
 app.post('/add-person-ajax', function(req, res) 
 {
@@ -327,7 +356,7 @@ app.post('/add-person-ajax', function(req, res)
         }
         else
         {
-            // If there was no error, perform a SELECT * on bsg_people
+            // If there was no error, perform a SELECT * on Customers
             query2 = `SELECT * FROM Customers;`;
             db.pool.query(query2, function(error, rows, fields){
 
@@ -384,9 +413,9 @@ app.post('/add-customer-membership-ajax', function(req, res)
         }
         else
         {
-            // If there was no error, perform a SELECT * on bsg_people
+            // If there was no error, perform a SELECT * on Customer Memberships
 
-            //query2 = `SELECT * FROM Customer_Memberships;`;
+            //pulls the new customer membership data with all aliases
             query2 = `SELECT customer_membership_id, membership_fee, CONCAT(first_name, " ", last_name) AS full_name, name, add_on_id `+
             `FROM Customer_Memberships ` +
             `INNER JOIN Customers ON Customer_Memberships.Customers_customer_id = Customers.customer_id ` +
@@ -432,7 +461,7 @@ app.post('/add-membership-add-on-ajax', function(req, res)
         }
         else
         {
-            // If there was no error, perform a SELECT * on bsg_people
+            // If there was no error, perform a SELECT * on membership add on
             query2 = `SELECT * FROM Membership_Add_Ons WHERE add_on_id = '${data.add_on_id}';`;
             db.pool.query(query2, function(error, rows, fields){
 
@@ -476,9 +505,9 @@ app.post('/add-vendor-location-ajax', function(req, res)
         }
         else
         {
-            // If there was no error, perform a SELECT * on bsg_people
+            // If there was no error, perform a SELECT * on vendor locations
             
-            //query2 = `SELECT * FROM Vendor_Locations;`;
+            //Pull new vendor location data for display, with aliases
 
             query2 = `SELECT vendor_loc_id, rent, Vendors.name AS vendor_name, Locations.name AS location_name ` +
             `FROM Vendor_Locations ` +
@@ -504,7 +533,7 @@ app.post('/add-vendor-location-ajax', function(req, res)
     })
 });
 
-//CREATES
+//Post route for locations
 app.post('/add-location-ajax', function (req, res) {
   // Capture the incoming data and parse it back to a JS object
   let data = req.body;
@@ -530,7 +559,7 @@ app.post('/add-location-ajax', function (req, res) {
           res.sendStatus(400);
       }
       else {
-          // If there was no error, perform a SELECT * on bsg_people
+          // If there was no error, perform a SELECT * on locations
           query2 = `SELECT * FROM Locations;`;
           db.pool.query(query2, function (error, rows, fields) {
 
@@ -550,6 +579,7 @@ app.post('/add-location-ajax', function (req, res) {
   })
 });
 
+//Post Routes for Vendors
 app.post('/add-vendor-ajax', function (req, res) {
   // Capture the incoming data and parse it back to a JS object
   let data = req.body;
@@ -570,7 +600,7 @@ app.post('/add-vendor-ajax', function (req, res) {
           res.sendStatus(400);
       }
       else {
-          // If there was no error, perform a SELECT * on bsg_people
+          // If there was no error, perform a SELECT * on Vendors
           query2 = `SELECT * FROM Vendors;`;
           db.pool.query(query2, function (error, rows, fields) {
 
@@ -590,6 +620,7 @@ app.post('/add-vendor-ajax', function (req, res) {
   })
 });
 
+//Post route for Events
 app.post('/add-event-ajax', function (req, res) {
   // Capture the incoming data and parse it back to a JS object
   let data = req.body;
@@ -610,9 +641,9 @@ app.post('/add-event-ajax', function (req, res) {
           res.sendStatus(400);
       }
       else {
-          // If there was no error, perform a SELECT * on bsg_people
+          // If there was no error, perform a SELECT * on Events with aliases for vendor location
           
-          //query2 = `SELECT * FROM Events;`;
+          
           query2 = `SELECT event_id, Events.name as event_name, Events.date as event_date, Vendors.name as vendor_name, Locations.name as location_name ` +
           `FROM Events ` +
           `INNER JOIN Vendor_Locations ON Events.Vendor_Locations_vendor_loc_id = Vendor_Locations.vendor_loc_id ` +
@@ -640,6 +671,7 @@ app.post('/add-event-ajax', function (req, res) {
 
 //----------------------DELETE ROUTES--------------------
 
+//DELETE route for Customers
 app.delete('/delete-person-ajax/', function(req,res,next){                                                                
   let data = req.body;
   let personID = parseInt(data.id);
@@ -647,7 +679,7 @@ app.delete('/delete-person-ajax/', function(req,res,next){
   let deleteCustomer= `DELETE FROM Customers WHERE customer_id = ?`;
 
 
-        // Run the 1st query
+        // Deletes any customer memberships that have the customer attached to it
         db.pool.query(deleteCust_Memb, [personID], function(error, rows, fields){
             if (error) {
 
@@ -658,7 +690,7 @@ app.delete('/delete-person-ajax/', function(req,res,next){
 
             else
             {
-                // Run the second query
+                // Deletes the customer itself
                 db.pool.query(deleteCustomer, [personID], function(error, rows, fields) {
         
                     if (error) {
@@ -680,7 +712,7 @@ app.delete('/delete-customer-membership-ajax/', function(req,res,next){
   let deleteCust_Memb = `DELETE FROM Customer_Memberships WHERE customer_membership_id = ?`;
 
 
-        // Run the 1st query
+        // Deletes the customer membership record
         db.pool.query(deleteCust_Memb, [custMemId], function(error, rows, fields){
             if (error) {
 
@@ -702,7 +734,7 @@ app.delete('/delete-add-on-ajax/', function (req, res, next) {
   let update_Mem = `UPDATE Customer_Memberships SET add_on_id = NULL WHERE add_on_id = ?;`
 
 
-
+  // if we delete any add on tied to a customer membership, we set that field to null
   db.pool.query(update_Mem, [add_on_id], function (error, rows, fields) {
       if (error) {
 
@@ -710,6 +742,7 @@ app.delete('/delete-add-on-ajax/', function (req, res, next) {
           console.log(error);
           res.sendStatus(400);
       } else {
+          //delete the add on itself
           db.pool.query(delete_Add_on, [add_on_id], function (error, rows, fields) {
 
               if (error) {
@@ -727,7 +760,6 @@ app.delete('/delete-add-on-ajax/', function (req, res, next) {
 });
 
 //DELETE routing for Vendor Locations
-
 app.delete('/delete-vendor-location-ajax/', function(req,res,next){                                                                
   let data = req.body;
   console.log(data)
@@ -749,7 +781,7 @@ app.delete('/delete-vendor-location-ajax/', function(req,res,next){
 })});
 
 
-//DELETES
+//DELETES LOCATIONS
 app.delete('/delete-location-ajax/', function (req, res, next) {
   let data = req.body;
   let locationID = parseInt(data.id);
@@ -760,7 +792,7 @@ app.delete('/delete-location-ajax/', function (req, res, next) {
 
 
 
-  // Run the 1st query
+  // Deletes any customer memberships tied to the location being deleted
   db.pool.query(deleteCust_Memb, [locationID], function (error, rows, fields) {
       if (error) {
 
@@ -770,13 +802,14 @@ app.delete('/delete-location-ajax/', function (req, res, next) {
       }
 
       else {
-          // Run the second query
+          // Deletes the location
           db.pool.query(deleteCustomer, [locationID], function (error, rows, fields) {
 
               if (error) {
                   console.log(error);
                   res.sendStatus(400);
               } else {
+                  //deletes any vendor locations tied to the location being deleted
                   db.pool.query(deleteVendor_Loc, [locationID], function (error, rows, fields) {
                       if (error) {
                           console.log(error);
@@ -791,6 +824,7 @@ app.delete('/delete-location-ajax/', function (req, res, next) {
   });
 });
 
+//Delete route for vendors
 app.delete('/delete-vendor-ajax/', function (req, res, next) {
   let data = req.body;
   let vendorID = parseInt(data.id);
@@ -798,7 +832,7 @@ app.delete('/delete-vendor-ajax/', function (req, res, next) {
   let deleteVendor = `DELETE FROM Vendors WHERE vendor_id = ?`;
 
 
-  // Run the 1st query
+  // Deletes any vendor locations tied to the vendor being deleted
   db.pool.query(deleteVend_Loc, [vendorID], function (error, rows, fields) {
       if (error) {
 
@@ -808,7 +842,7 @@ app.delete('/delete-vendor-ajax/', function (req, res, next) {
       }
 
       else {
-          // Run the second query
+          // Deletes the vendor itself
           db.pool.query(deleteVendor, [vendorID], function (error, rows, fields) {
 
               if (error) {
@@ -822,13 +856,14 @@ app.delete('/delete-vendor-ajax/', function (req, res, next) {
   })
 });
 
+//DELETE ROUTE FOR EVENTS
 app.delete('/delete-event-ajax/', function (req, res, next) {
   let data = req.body;
   let eventID = parseInt(data.id);
   let deleteEvents = `DELETE FROM Events WHERE event_id = ?`;
 
 
-  // Run the 1st query
+  // DELETES THE EVENT
   db.pool.query(deleteEvents, [eventID], function (error, rows, fields) {
       if (error) {
 
@@ -860,7 +895,7 @@ app.delete('/delete-event-ajax/', function (req, res, next) {
 app.put('/put-person-ajax', function(req,res,next){   
   console.log(req.body);                                
   let data = req.body;
-  console.log("made it")
+
 
   let person = parseInt(data.fullname);
   let active = parseInt(data.active);
@@ -869,7 +904,7 @@ app.put('/put-person-ajax', function(req,res,next){
   queryUpdateCustomer = `UPDATE Customers SET phone = ?, notes = ?, active = ?, email = ? WHERE Customers.customer_id = ?;`;
   selectCustomer = `SELECT * FROM Customers WHERE Customers.customer_id = ?;`
 
-        // Run the 1st query
+        // Updates the customer record
         db.pool.query(queryUpdateCustomer, [data.phone, data.notes, data.active, data.email, person], function(error, rows, fields){
             if (error) {
 
@@ -881,7 +916,7 @@ app.put('/put-person-ajax', function(req,res,next){
             // If there was no error, we run our second query and return the customer data to populate the table
             else
             {
-                // Run the second query
+                // Pulls the new Customer data for display
                 db.pool.query(selectCustomer, [person], function(error, rows, fields) {
         
                     if (error) {
@@ -899,7 +934,7 @@ app.put('/put-person-ajax', function(req,res,next){
 app.put('/put-customer-membership-ajax', function(req,res,next){   
   console.log(req.body);                                
   let data = req.body;
-  console.log("made it")
+  
 
   let custMemId = parseInt(data.customer_membership_id);
   let custId = parseInt(data.Customers_customer_id);
@@ -907,6 +942,7 @@ app.put('/put-customer-membership-ajax', function(req,res,next){
   let membFee = parseInt(data.membership_fee);
   let add_on_id;
 
+  //sends null if field is null, the string otherwise
   if (data.add_on_id === "Null") {
     add_on_id = null;
   }
@@ -922,7 +958,7 @@ app.put('/put-customer-membership-ajax', function(req,res,next){
   `INNER JOIN Customers ON Customer_Memberships.Customers_customer_id = Customers.customer_id ` +
   `INNER JOIN Locations ON Customer_Memberships.Locations_location_id = Locations.location_id ` +
   `WHERE customer_membership_id = ?;`
-        // Run the 1st query
+        // Updates the customer membership record
         db.pool.query(queryUpdateCustMem, [custId, locId, membFee, add_on_id, custMemId], function(error, rows, fields){
             if (error) {
 
@@ -934,7 +970,7 @@ app.put('/put-customer-membership-ajax', function(req,res,next){
             // If there was no error, we run our second query and return the customer data to populate the table
             else
             {
-                // Run the second query
+                // Pulls the data for display, with all aliases
                 db.pool.query(selectCustMems, [custMemId], function(error, rows, fields) {
         
                     if (error) {
@@ -968,7 +1004,7 @@ app.put('/put-vendor-location-ajax', function(req,res,next){
   `INNER JOIN Vendors ON Vendor_Locations.Vendors_vendor_id = Vendors.vendor_id ` +
   `INNER JOIN Locations ON Vendor_Locations.Locations_location_id = Locations.location_id ` +
   `WHERE vendor_loc_id = ?;`
-        // Run the 1st query
+        // Updates the desired vendor location
         db.pool.query(queryUpdateVendorLoc, [vendorId, locationId, rent, venLocId], function(error, rows, fields){
             if (error) {
 
@@ -980,7 +1016,7 @@ app.put('/put-vendor-location-ajax', function(req,res,next){
             // If there was no error, we run our second query and return the customer data to populate the table
             else
             {
-                // Run the second query
+                // Pulls the vendor location data for display with all aliases
                 db.pool.query(selectVendorLocs, [venLocId], function(error, rows, fields) {
         
                     if (error) {
@@ -994,7 +1030,7 @@ app.put('/put-vendor-location-ajax', function(req,res,next){
 })});
 
 //UPDATES
-//UPDATES
+//UPDATES LOCATIONS
 app.put('/put-location-ajax', function (req, res, next) {
   console.log(req.body);
   let data = req.body;
@@ -1007,7 +1043,7 @@ app.put('/put-location-ajax', function (req, res, next) {
   queryUpdateLocation = `UPDATE Locations SET address = ?, phone = ?, active = ?  WHERE Locations.location_id = ?;`;
   selectLocation = `SELECT * FROM Locations WHERE Locations.location_id = ?;`
 
-  // Run the 1st query
+  // Updates the desired location
   db.pool.query(queryUpdateLocation, [data.address, data.phone, data.active, location], function (error, rows, fields) {
       if (error) {
 
@@ -1018,7 +1054,7 @@ app.put('/put-location-ajax', function (req, res, next) {
 
       // If there was no error, we run our second query and return the customer data to populate the table
       else {
-          // Run the second query
+          // Pulls the new location data for display
           db.pool.query(selectLocation, [location], function (error, rows, fields) {
 
               if (error) {
@@ -1032,6 +1068,7 @@ app.put('/put-location-ajax', function (req, res, next) {
   })
 });
 
+// UPDATE ROUTE FOR VENDORS
 app.put('/put-vendor-ajax', function (req, res, next) {
   console.log(req.body);
   let data = req.body;
@@ -1043,7 +1080,7 @@ app.put('/put-vendor-ajax', function (req, res, next) {
   queryUpdateVendor = `UPDATE Vendors SET events = ?, phone = ?, email = ?, billing_address = ?  WHERE Vendors.vendor_id = ?;`;
   selectVendor = `SELECT * FROM Vendors WHERE Vendors.vendor_id = ?;`
 
-  // Run the 1st query
+  // Updates the vendor
   db.pool.query(queryUpdateVendor, [data.events, data.phone, data.email, data.address, vendor], function (error, rows, fields) {
       if (error) {
 
@@ -1054,7 +1091,7 @@ app.put('/put-vendor-ajax', function (req, res, next) {
 
       // If there was no error, we run our second query and return the customer data to populate the table
       else {
-          // Run the second query
+          // Pulls the new vendor data for display
           db.pool.query(selectVendor, [vendor], function (error, rows, fields) {
 
               if (error) {
@@ -1068,7 +1105,7 @@ app.put('/put-vendor-ajax', function (req, res, next) {
   })
 });
 
-
+//UPDATE ROUTE FOR EVENTS
 app.put('/put-event-ajax', function (req, res, next) {
   console.log(req.body);
   let data = req.body;
@@ -1086,7 +1123,7 @@ app.put('/put-event-ajax', function (req, res, next) {
   `INNER JOIN Locations ON Vendor_Locations.Locations_location_id = Locations.location_id ` +
   `WHERE Events.event_id = ?`
 
-  // Run the 1st query
+  // Updates the desired event
   db.pool.query(queryUpdateEvent, [data.date, event], function (error, rows, fields) {
       if (error) {
 
@@ -1097,7 +1134,7 @@ app.put('/put-event-ajax', function (req, res, next) {
 
       // If there was no error, we run our second query and return the customer data to populate the table
       else {
-          // Run the second query
+          // Pulls the event data for display
           db.pool.query(selectEvent, [event], function (error, rows, fields) {
 
               if (error) {
@@ -1111,7 +1148,7 @@ app.put('/put-event-ajax', function (req, res, next) {
   })
 });
 
-// Starting Coleton's additions
+
 
 
 

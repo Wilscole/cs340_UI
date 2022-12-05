@@ -1,5 +1,6 @@
 //Code Cited 
-//starter code from osu-cs340 nodejs dev guide; modified to fit Customer entity
+//starter code from osu-cs340 nodejs dev guide; 
+//Adapted to fit Event entity
 //Source URL: https://github.com/osu-cs340-ecampus/nodejs-starter-app
 // Authors: George Kochera et al. 
 // Date accessed: 11/8/22

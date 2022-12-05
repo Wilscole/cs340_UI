@@ -1,4 +1,6 @@
-//Code Cited (starter code from osu-cs340 nodejs dev guide)
+//Code Cited  12-5-2022
+//starter code from osu-cs340 nodejs dev guide
+//Used db.connector format from source guide
 //Source URL: https://github.com/osu-cs340-ecampus/nodejs-starter-app
 // Authors: George Kochera et al. 
 

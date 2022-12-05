@@ -1,5 +1,6 @@
 //Code Cited 
-//starter code from osu-cs340 nodejs dev guide; modified to fit Customer entity
+//starter code from osu-cs340 nodejs dev guide; 
+//Adapted to fit Location entity
 //Source URL: https://github.com/osu-cs340-ecampus/nodejs-starter-app
 // Authors: George Kochera et al. 
 // Date accessed: 11/8/22
@@ -99,7 +100,7 @@ addRowToTable = (data) => {
     deleteCell = document.createElement("button");
     deleteCell.innerHTML = "Delete";
     deleteCell.onclick = function () {
-        deletePerson(newRow.customer_id);
+        deleteLocation(newRow.location_id);
     };
 
     // Add the cells to the row 
