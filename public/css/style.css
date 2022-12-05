@@ -18,7 +18,8 @@ tr {
   text-align: center;
 }
 th {
-  border: 1pt solid black
+  border: 1pt solid black;
+  background-color:lightgray;
 }
 td {
   text-align: center;
@@ -49,4 +50,10 @@ p {
 }
 button {
   text-align: center;
+}
+nav>a {
+  border: 1pt solid lightgray;
+}
+nav>a:hover {
+  border: 1pt solid black;
 }

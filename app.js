@@ -47,7 +47,7 @@ app.get('/customers', function(req, res)
 {
     let query1 = "SELECT * FROM Customers;";
     db.pool.query(query1, function(error, rows, fields){
-        let headers = [{header:"Customer ID"}, {header:"First Name"}, {header: "Last Name"}, {header: "Phone"}, {header: "Notes"}, {header: "Active"}, {header: "Email"}];
+        let headers = [{header:"Customer ID"}, {header:"First Name"}, {header: "Last Name"}, {header: "Phone"}, {header: "Notes"}, {header: "Active"}, {header: "Email"}, {header:""}];
         res.render('customers', {data: rows, headers: headers});
     })
 });
@@ -56,7 +56,7 @@ app.get('/membership-add-ons', function(req, res)
 {
   let query1 = "SELECT * FROM Membership_Add_Ons;";
   db.pool.query(query1, function(error, rows, fields){
-    let headers = [{header:"Add-On Id"}, {header:"Description"}];
+    let headers = [{header:"Add-On Id"}, {header:"Description"}, {header:""}];
     res.render('membership_add_ons', {data: rows, headers: headers});
   })
 });
@@ -108,7 +108,7 @@ app.get('/customer-memberships', function(req, res)
                   {Locations_location_id: locationmap[custMem.Locations_location_id]})
               })
 
-              let headers = [{header:"Cust-Mem ID"}, {header:"Customer Name"}, {header:"Location Name"}, {header:"Membership Fee"}, {header:"Member Add-On"}];
+              let headers = [{header:"Cust-Mem ID"}, {header:"Customer Name"}, {header:"Location Name"}, {header:"Membership Fee"}, {header:"Member Add-On"}, {header:""}];
 
 
 
@@ -158,7 +158,7 @@ app.get('/vendor-locations', function(req, res)
                 {Locations_location_id: locationmap[vendorLoc.Locations_location_id]})
             })
 
-            let headers = [{header:"Vendor-Loc. ID"}, {header:"Vendor Name"}, {header:"Location Name"}, {header:"Rent"}];
+            let headers = [{header:"Vendor-Loc. ID"}, {header:"Vendor Name"}, {header:"Location Name"}, {header:"Rent"}, {header:""}];
 
             res.render('vendor_locations', {data: vendorLocs, headers: headers, vendors: vendors, locations: locations});
           })
@@ -174,7 +174,7 @@ app.get('/locations', function (req, res) {
 
 
   db.pool.query(query1, function (error, rows, fields) {    // Execute the query
-      let headers = [{header:"Location ID"}, {header:"Location Name"}, {header:"Address"}, {header:"Phone"}, {header:"Active"}];
+      let headers = [{header:"Location ID"}, {header:"Location Name"}, {header:"Address"}, {header:"Phone"}, {header:"Active"}, {header:""}];
 
       res.render('locations', { data: rows, headers: headers });                  // Render the index.hbs file, and also send the renderer
   })                                                      // an object where 'data' is equal to the 'rows' we
@@ -184,7 +184,7 @@ app.get('/vendors', function (req, res) {
   let query1 = "SELECT * FROM Vendors;";               // Define our query
 
   db.pool.query(query1, function (error, rows, fields) {    // Execute the query
-      let headers = [{header:"Vendor ID"}, {header:"Vendor Name"}, {header:"Events"}, {header:"Phone"}, {header:"Email"}, {header:"Billing Address"}];
+      let headers = [{header:"Vendor ID"}, {header:"Vendor Name"}, {header:"Events"}, {header:"Phone"}, {header:"Email"}, {header:"Billing Address"}, {header:""}];
 
       res.render('vendors', { data: rows, headers: headers });                  // Render the index.hbs file, and also send the renderer
   })                                                      // an object where 'data' is equal to the 'rows' we
@@ -280,7 +280,7 @@ app.get('/events', function (req, res) {
                                           {Locations_location_id: locMap[location.Locations_location_id]})
                 })
 
-                let headers = [{header:"Event ID"}, {header:"Event Name"}, {header:"Date"}, {header:"Vendor - Location"}];
+                let headers = [{header:"Event ID"}, {header:"Event Name"}, {header:"Date"}, {header:"Vendor - Location"}, {header:""}];
                 //console.log(locations)
                 res.render('events', { events: events, headers: headers, locations: locations, vendors: vendorMap, customers: customers, loc: locMap });   
               })
