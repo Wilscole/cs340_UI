@@ -94,7 +94,9 @@ addRowToTable = (data) => {
     idCell.innerText = newRow.event_id;
     //nameCell.innerText = newRow.name;
     nameCell.innerText = newRow.event_name;
-    dateCell.innerText = newRow.event_date;
+
+    let newDate = new Date(newRow.event_date).toDateString()
+    dateCell.innerText = newDate;
     //locationCell.innerText = newRow.location;
     locationCell.innerText = `${newRow.vendor_name} - ${newRow.location_name}`
     deleteCell = document.createElement("button");

@@ -92,8 +92,8 @@ function updateRow(data, eventID) {
             // Get td of homeworld value
             let dateTD = updateRowIndex.getElementsByTagName("td")[2];
             //let locationTD = updateRowIndex.getElementsByTagName("td")[3];
-
-            dateTD.innerHTML = parsedData[0].date; 
+            let newDate = new Date(parsedData[0].date).toDateString();
+            dateTD.innerHTML = newDate;
             //notesTD.innerHTML = parsedData[0].notes; 
             //activeTD.innerHTML = parsedData[0].active; 
             //emailTD.innerHTML = parsedData[0].email; 

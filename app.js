@@ -268,6 +268,11 @@ app.get('/events', function (req, res) {
                                           `${eventVendorMap[id]} - ${eventLocationMap[id]}`})
                 })
 
+                events.map (event => {
+                  let newDate = new Date(event.date).toDateString()
+                  return Object.assign(event, {date: newDate})
+                })
+
                 locations.map (location => {
                   let id = location.vendor_loc_id
                   return Object.assign(location, 
