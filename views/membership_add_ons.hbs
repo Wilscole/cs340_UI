@@ -34,9 +34,11 @@
         {{!-- For just the first row, we print each key of the row object as a header cell so we
         know what each column means when the page renders --}}
         <tr>
-            {{#each data.[0]}}
+            {{!--{{#each data.[0]}}--}}
+            {{#each headers}}
             <th>
-                {{@key}}
+                {{!--{{@key}}--}}
+                {{this.header}}
             </th>
             {{/each}}
         </tr>
@@ -50,10 +52,12 @@
         <tr data-value={{this.add_on_id}}>
             <td>{{this.add_on_id}}</td>
             <td>{{this.description}}</td>
+            <td><button onclick="deleteAddOn(`{{this.add_on_id}}`)">Delete</button></td>
         </tr>
         {{/each}}
     </tbody>
 </table>
+<script src="./js/delete_membership_add_on.js"></script>
 
 {{!-- Form to add a record to the table using AJAX --}}
 <h2>Adding a Membership Add-On</h2>

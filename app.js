@@ -47,7 +47,8 @@ app.get('/customers', function(req, res)
 {
     let query1 = "SELECT * FROM Customers;";
     db.pool.query(query1, function(error, rows, fields){
-        res.render('customers', {data: rows});
+        let headers = [{header:"Customer ID"}, {header:"First Name"}, {header: "Last Name"}, {header: "Phone"}, {header: "Notes"}, {header: "Active"}, {header: "Email"}];
+        res.render('customers', {data: rows, headers: headers});
     })
 });
 
@@ -55,7 +56,8 @@ app.get('/membership-add-ons', function(req, res)
 {
   let query1 = "SELECT * FROM Membership_Add_Ons;";
   db.pool.query(query1, function(error, rows, fields){
-    res.render('membership_add_ons', {data: rows});
+    let headers = [{header:"Add-On Id"}, {header:"Description"}];
+    res.render('membership_add_ons', {data: rows, headers: headers});
   })
 });
 
@@ -106,9 +108,11 @@ app.get('/customer-memberships', function(req, res)
                   {Locations_location_id: locationmap[custMem.Locations_location_id]})
               })
 
+              let headers = [{header:"Cust-Mem ID"}, {header:"Customer Name"}, {header:"Location Name"}, {header:"Membership Fee"}, {header:"Member Add-On"}];
 
 
-              res.render('customer_memberships', {data: custMems, customers: customers, locations: locations, addons: addons});
+
+              res.render('customer_memberships', {data: custMems, headers: headers, customers: customers, locations: locations, addons: addons});
 
             })
 
@@ -154,7 +158,9 @@ app.get('/vendor-locations', function(req, res)
                 {Locations_location_id: locationmap[vendorLoc.Locations_location_id]})
             })
 
-            res.render('vendor_locations', {data: vendorLocs, vendors: vendors, locations: locations});
+            let headers = [{header:"Vendor-Loc. ID"}, {header:"Vendor Name"}, {header:"Location Name"}, {header:"Rent"}];
+
+            res.render('vendor_locations', {data: vendorLocs, headers: headers, vendors: vendors, locations: locations});
           })
         })
         
@@ -168,8 +174,9 @@ app.get('/locations', function (req, res) {
 
 
   db.pool.query(query1, function (error, rows, fields) {    // Execute the query
+      let headers = [{header:"Location ID"}, {header:"Location Name"}, {header:"Address"}, {header:"Phone"}, {header:"Active"}];
 
-      res.render('locations', { data: rows });                  // Render the index.hbs file, and also send the renderer
+      res.render('locations', { data: rows, headers: headers });                  // Render the index.hbs file, and also send the renderer
   })                                                      // an object where 'data' is equal to the 'rows' we
 });
 
@@ -177,8 +184,9 @@ app.get('/vendors', function (req, res) {
   let query1 = "SELECT * FROM Vendors;";               // Define our query
 
   db.pool.query(query1, function (error, rows, fields) {    // Execute the query
+      let headers = [{header:"Vendor ID"}, {header:"Vendor Name"}, {header:"Events"}, {header:"Phone"}, {header:"Email"}, {header:"Billing Address"}];
 
-      res.render('vendors', { data: rows });                  // Render the index.hbs file, and also send the renderer
+      res.render('vendors', { data: rows, headers: headers });                  // Render the index.hbs file, and also send the renderer
   })                                                      // an object where 'data' is equal to the 'rows' we
 });
 
@@ -266,8 +274,10 @@ app.get('/events', function (req, res) {
                                         {Vendors_vendor_id: vendorMap[location.Vendors_vendor_id]},
                                           {Locations_location_id: locMap[location.Locations_location_id]})
                 })
+
+                let headers = [{header:"Event ID"}, {header:"Event Name"}, {header:"Date"}, {header:"Vendor - Location"}];
                 //console.log(locations)
-                res.render('events', { events: events, locations: locations, vendors: vendorMap, customers: customers, loc: locMap });   
+                res.render('events', { events: events, headers: headers, locations: locations, vendors: vendorMap, customers: customers, loc: locMap });   
               })
 
 
@@ -418,7 +428,7 @@ app.post('/add-membership-add-on-ajax', function(req, res)
         else
         {
             // If there was no error, perform a SELECT * on bsg_people
-            query2 = `SELECT * FROM Membership_Add_Ons;`;
+            query2 = `SELECT * FROM Membership_Add_Ons WHERE add_on_id = '${data.add_on_id}';`;
             db.pool.query(query2, function(error, rows, fields){
 
                 // If there was an error on the second query, send a 400
@@ -677,6 +687,39 @@ app.delete('/delete-customer-membership-ajax/', function(req,res,next){
           }
 
 })});
+
+//DELETE ROUTING FOR MEMBERSHIP ADD ONS
+app.delete('/delete-add-on-ajax/', function (req, res, next) {
+  let data = req.body;
+  let add_on_id = data.add_on_id;
+  console.log('add_on_id', add_on_id)
+  let delete_Add_on = `DELETE FROM Membership_Add_Ons WHERE add_on_id = ?;`
+  let update_Mem = `UPDATE Customer_Memberships SET add_on_id = NULL WHERE add_on_id = ?;`
+
+
+
+  db.pool.query(update_Mem, [add_on_id], function (error, rows, fields) {
+      if (error) {
+
+          // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+          console.log(error);
+          res.sendStatus(400);
+      } else {
+          db.pool.query(delete_Add_on, [add_on_id], function (error, rows, fields) {
+
+              if (error) {
+                  console.log(error);
+                  res.sendStatus(400);
+              } else {
+                  console.log('Success');
+                  res.sendStatus(204);
+
+              }
+          })
+      }
+
+  })
+});
 
 //DELETE routing for Vendor Locations
 

@@ -70,12 +70,14 @@ addRowToTable = (data) => {
 
     // Get a reference to the new row from the database query (last object)
     let parsedData = JSON.parse(data);
-    let newRow = parsedData[parsedData.length - 1]
+    //let newRow = parsedData[parsedData.length - 1]
+    let newRow = parsedData[0]
 
     // Create a row and 4 cells
     let row = document.createElement("TR");
     let idCell = document.createElement("TD");
     let descriptionCell = document.createElement("TD");
+    let deleteCell = document.createElement("TD");
 
 
     
@@ -86,6 +88,12 @@ addRowToTable = (data) => {
     //locIdCell.innerText = newRow.Locations_location_id;
     descriptionCell.innerText = newRow.description;
 
+    deleteCell = document.createElement("button");
+    deleteCell.innerHTML = "Delete";
+    deleteCell.onclick = function(){
+        deleteAddOn(newRow.add_on_id);
+    };
+
 
 
 
@@ -93,6 +101,7 @@ addRowToTable = (data) => {
     // Add the cells to the row 
     row.appendChild(idCell);
     row.appendChild(descriptionCell);
+    row.appendChild(deleteCell);
 
 
 
